@@ -3,6 +3,7 @@ dist
 file
 *.code-workspace
 *.env
+*.gal
 .vscode
 desktop.ini
 Thumbs.db
