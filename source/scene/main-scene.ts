@@ -6,6 +6,7 @@ import {
   SceneActivationContext
 } from "excalibur";
 import {
+  ActionManagerSystem,
   InputManagerSystem,
   TimerSystem
 } from "/source/component";
@@ -37,6 +38,7 @@ export class MainScene extends Scene {
 
   private initializeSystems(): void {
     this.world.add(new InputManagerSystem());
+    this.world.add(new ActionManagerSystem());
     this.world.add(new TimerSystem());
   }
 

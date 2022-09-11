@@ -23,7 +23,7 @@ import {
 } from "/source/scene/main-scene";
 import {
   downloadImage
-} from "/source/util/misc";
+} from "/source/util/image";
 
 
 export class CustomEngine extends Engine {

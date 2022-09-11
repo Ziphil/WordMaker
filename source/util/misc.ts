@@ -1,7 +1,9 @@
 //
 
 import {
-  Random
+  Random,
+  Vector,
+  vec
 } from "excalibur";
 
 
@@ -10,18 +12,36 @@ export function tap<T>(self: T, callback: (value: T) => void): T {
   return self;
 }
 
-export function randomize(random: Random, value: number): number {
-  return random.integer(value / 2, value * 3 / 2);
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }
 
-export function downloadImage(imageElement: HTMLImageElement, name: string): void {
-  const canvas = document.createElement("canvas") ;
-  canvas.width = imageElement.width;
-  canvas.height = imageElement.height;
-  const context = canvas.getContext("2d")!;
-  context.drawImage(imageElement, 0, 0);
-  const link = document.createElement("a");
-  link.href = canvas.toDataURL("image/png");
-  link.download = name;
-  link.click();
+export function lerp(start: number, end: number, ratio: number): number;
+export function lerp(start: Vector, end: Vector, ratio: number): Vector;
+export function lerp(start: any, end: any, ratio: number): number | Vector {
+  if (typeof start === "number") {
+    return start * (1 - ratio) + end * ratio;
+  } else {
+    const x = lerp(start.x, end.x, ratio);
+    const y = lerp(start.y, end.y, ratio);
+    return vec(x, y);
+  }
+}
+
+export function calcVectorFromDirection(direction: "right" | "left" | "down" | "up"): Vector {
+  if (direction === "right") {
+    return vec(1, 0);
+  } else if (direction === "left") {
+    return vec(-1, 0);
+  } else if (direction === "down") {
+    return vec(0, 1);
+  } else if (direction === "up") {
+    return vec(0, -1);
+  } else {
+    return vec(0, 0);
+  }
+}
+
+export function randomize(random: Random, value: number): number {
+  return random.integer(value / 2, value * 3 / 2);
 }
