@@ -84,7 +84,7 @@ export class Tile extends FloatingActor {
         moveTo(this, this.pos.add(vec(0, 4)), 100),
         fadeOut(this, 100)
       );
-      this.unparent();
+      this.kill();
     }
   }
 
