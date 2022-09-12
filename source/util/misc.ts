@@ -38,7 +38,7 @@ export function calcVectorFromDirection(direction: "right" | "left" | "down" | "
   } else if (direction === "up") {
     return vec(0, -1);
   } else {
-    return vec(0, 0);
+    throw new Error("cannot happen");
   }
 }
 

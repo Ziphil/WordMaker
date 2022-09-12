@@ -17,6 +17,7 @@ import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
+  Field,
   TILE_DIMENSTION
 } from "/source/entity/main/field";
 import {
@@ -32,12 +33,17 @@ export type PlayerConfigs = {
 
 export class Player extends FloatingActor {
 
+  public tileX: number;
+  public tileY: number;
   private moving: boolean;
+  public field!: Field;
 
   public constructor({tileX, tileY, ...configs}: PlayerConfigs) {
     super({
       pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height)
     });
+    this.tileX = tileX;
+    this.tileY = tileY;
     this.moving = false;
     this.graphics.use(new Circle({radius: 8, color: Color.fromHex("#000000")}));
   }
@@ -62,13 +68,17 @@ export class Player extends FloatingActor {
     if (!this.moving) {
       const direction = this.determineDirection();
       if (direction !== null) {
-        const diffVector = calcVectorFromDirection(direction).scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
+        const directionVector = calcVectorFromDirection(direction);
+        const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
         const action = function *(this: Player): Generator<unknown, void, number> {
           this.moving = true;
-          yield* moveTo(this, this.pos.add(diffVector), 150);
+          yield* moveTo(this, this.pos.add(diffPos), 150);
           this.moving = false;
         };
         actionManager.addAction(action.bind(this));
+        this.field.moveTiles(this.tileX, this.tileY, direction);
+        this.tileX += directionVector.x;
+        this.tileY += directionVector.y;
       }
     }
   }
