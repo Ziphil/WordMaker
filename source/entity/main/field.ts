@@ -10,6 +10,9 @@ import {
 import {
   Tile
 } from "/source/entity/main/tile";
+import {
+  calcDirectionDiff
+} from "/source/util/misc";
 
 
 export const TILE_DIMENSTION = {
@@ -36,7 +39,7 @@ export class Field extends FloatingActor {
   }
 
   public override onInitialize(engine: Engine): void {
-    this.addTile(0, 0);
+    this.addTile(1, 1);
     this.addTile(2, 3);
     this.addTile(2, 4);
     this.addTile(1, 5);
@@ -56,17 +59,19 @@ export class Field extends FloatingActor {
   }
 
   public moveTiles(tileX: number, tileY: number, direction: "right" | "left" | "down" | "up"): void {
-    let index = tileX + tileY * FIELD_PROPS.tileWidth;
-    const [diffIndex, maxIndex, minIndex] = calcIndexFromDirection(index, direction);
+    const [diffTileX, diffTileY] = calcDirectionDiff(direction);
     const updatedTiles = [] ;
-    updatedTiles.push({index: index + diffIndex, tile: undefined});
+    updatedTiles.push({tileX: tileX + diffTileX, tileY: tileY + diffTileY, tile: undefined});
     while (true) {
-      index += diffIndex;
-      if ((maxIndex === null || index < maxIndex) && (minIndex === null || index >= minIndex)) {
-        const tile = this.tiles[index];
+      tileX += diffTileX;
+      tileY += diffTileY;
+      if (!isEdge(tileX, tileY)) {
+        const tile = this.getTile(tileX, tileY);
         if (tile !== undefined) {
           tile.move(direction);
-          updatedTiles.push({index: index + diffIndex, tile});
+          if (!isEdge(tileX + diffTileX, tileY + diffTileY)) {
+            updatedTiles.push({tileX: tileX + diffTileX, tileY: tileY + diffTileY, tile});
+          }
         } else {
           break;
         }
@@ -74,37 +79,31 @@ export class Field extends FloatingActor {
         break;
       }
     }
-    for (const {index, tile} of updatedTiles) {
-      this.tiles[index] = tile;
+    for (const {tileX, tileY, tile} of updatedTiles) {
+      this.setTile(tileX, tileY, tile);
     }
+    console.log(toTileString(this.tiles));
+  }
+
+  private getTile(tileX: number, tileY: number): Tile | undefined {
+    const index = tileX + tileY * FIELD_PROPS.tileWidth;
+    return this.tiles[index];
+  }
+
+  private setTile(tileX: number, tileY: number, tile: Tile | undefined): void {
+    const index = tileX + tileY * FIELD_PROPS.tileWidth;
+    this.tiles[index] = tile;
   }
 
 }
 
 
-export function calcIndexFromDirection(index: number, direction: "right" | "left" | "down" | "up"): [number, number | null, number | null] {
-  if (direction === "right") {
-    const diffIndex = 1;
-    const maxIndex = (Math.floor(index / FIELD_PROPS.tileWidth) + 1) * FIELD_PROPS.tileWidth;
-    return [diffIndex, maxIndex, null];
-  } else if (direction === "left") {
-    const diffIndex = -1;
-    const minIndex = Math.floor(index / FIELD_PROPS.tileWidth) * FIELD_PROPS.tileWidth;
-    return [diffIndex, null, minIndex];
-  } else if (direction === "down") {
-    const diffIndex = FIELD_PROPS.tileWidth;
-    const maxIndex = FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight;
-    return [diffIndex, maxIndex, null];
-  } else if (direction === "up") {
-    const diff = -FIELD_PROPS.tileWidth;
-    const minIndex = 0;
-    return [diff, null, minIndex];
-  } else {
-    throw new Error("cannot happen");
-  }
+function isEdge(tileX: number, tileY: number): boolean {
+  const {tileWidth, tileHeight} = FIELD_PROPS;
+  return tileX % tileWidth === 0 || tileX % tileWidth === tileWidth - 1 || tileY % tileHeight === 0 || tileY % tileHeight === tileHeight - 1;
 }
 
-export function toTileString(tiles: Array<Tile | undefined>): string {
+function toTileString(tiles: Array<Tile | undefined>): string {
   let string = "";
   for (let y = 0 ; y < FIELD_PROPS.tileHeight ; y ++) {
     for (let x = 0 ; x < FIELD_PROPS.tileWidth ; x ++) {

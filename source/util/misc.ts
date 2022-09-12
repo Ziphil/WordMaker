@@ -28,15 +28,15 @@ export function lerp(start: any, end: any, ratio: number): number | Vector {
   }
 }
 
-export function calcVectorFromDirection(direction: Direction): Vector {
+export function calcDirectionDiff(direction: Direction): [number, number] {
   if (direction === "right") {
-    return vec(1, 0);
+    return [1, 0];
   } else if (direction === "left") {
-    return vec(-1, 0);
+    return [-1, 0];
   } else if (direction === "down") {
-    return vec(0, 1);
+    return [0, 1];
   } else if (direction === "up") {
-    return vec(0, -1);
+    return [0, -1];
   } else {
     throw new Error("cannot happen");
   }

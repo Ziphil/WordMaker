@@ -5,6 +5,7 @@ import {
   vec
 } from "excalibur";
 import {
+  ActionGenerator,
   ActionsComponent,
   moveTo
 } from "/source/component";
@@ -19,7 +20,7 @@ import {
 } from "/source/entity/main/field";
 import {
   Direction,
-  calcVectorFromDirection
+  calcDirectionDiff
 } from "/source/util/misc";
 
 
@@ -55,20 +56,21 @@ export class Tile extends FloatingActor {
   }
 
   public move(direction: Direction): void {
-    const actionManager = this.get(ActionsComponent)!;
+    const actions = this.get(ActionsComponent)!;
     if (!this.moving) {
-      const directionVector = calcVectorFromDirection(direction);
-      actionManager.addAction(() => this.actMove(direction));
-      this.tileX += directionVector.x;
-      this.tileY += directionVector.y;
+      const [diffTileX, diffTileY] = calcDirectionDiff(direction);
+      actions.addAction(() => this.actMove(direction));
+      this.tileX += diffTileX;
+      this.tileY += diffTileY;
     }
   }
 
-  private *actMove(direction: Direction): Generator<unknown, void, number> {
-    const directionVector = calcVectorFromDirection(direction);
-    const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
+  private *actMove(direction: Direction): ActionGenerator {
+    const [diffTileX, diffTileY] = calcDirectionDiff(direction);
+    const diffX = diffTileX * TILE_DIMENSTION.width;
+    const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* moveTo(this, this.pos.add(diffPos), 140);
+    yield* moveTo(this, this.pos.add(vec(diffX, diffY)), 140);
     this.moving = false;
   }
 

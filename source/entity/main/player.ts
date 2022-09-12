@@ -21,7 +21,7 @@ import {
 } from "/source/entity/main/field";
 import {
   Direction,
-  calcVectorFromDirection
+  calcDirectionDiff
 } from "/source/util/misc";
 
 
@@ -68,20 +68,21 @@ export class Player extends FloatingActor {
     if (!this.moving) {
       const direction = this.determineDirection();
       if (direction !== null) {
-        const directionVector = calcVectorFromDirection(direction);
+        const [diffTileX, diffTileY] = calcDirectionDiff(direction);
         actions.addAction(() => this.actMove(direction));
         this.field.moveTiles(this.tileX, this.tileY, direction);
-        this.tileX += directionVector.x;
-        this.tileY += directionVector.y;
+        this.tileX += diffTileX;
+        this.tileY += diffTileY;
       }
     }
   }
 
   private *actMove(direction: Direction): ActionGenerator {
-    const directionVector = calcVectorFromDirection(direction);
-    const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
+    const [diffTileX, diffTileY] = calcDirectionDiff(direction);
+    const diffX = diffTileX * TILE_DIMENSTION.width;
+    const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* moveTo(this, this.pos.add(diffPos), 140);
+    yield* moveTo(this, this.pos.add(vec(diffX, diffY)), 140);
     this.moving = false;
   }
 
