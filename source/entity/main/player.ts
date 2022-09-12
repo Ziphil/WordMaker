@@ -16,6 +16,7 @@ import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
+  FIELD_PROPS,
   Field,
   TILE_DIMENSTION
 } from "/source/entity/main/field";
@@ -54,6 +55,7 @@ export class Player extends FloatingActor {
 
   public override onPreUpdate(engine: Engine, delta: number): void {
     this.move();
+    this.updateDepth();
   }
 
   private initializeComponents(engine: Engine): void {
@@ -75,6 +77,10 @@ export class Player extends FloatingActor {
         this.tileY += diffTileY;
       }
     }
+  }
+
+  private updateDepth(): void {
+    this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
   }
 
   private *actMove(direction: Direction): ActionGenerator {

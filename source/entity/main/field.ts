@@ -16,8 +16,8 @@ import {
 
 
 export const TILE_DIMENSTION = {
-  width: 17,
-  height: 17
+  width: 15,
+  height: 15
 };
 export const FIELD_PROPS = {
   tileWidth: 18,

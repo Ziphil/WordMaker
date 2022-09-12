@@ -53,6 +53,10 @@ export class Tile extends FloatingActor {
     this.initializeComponents(engine);
   }
 
+  public override onPreUpdate(engine: Engine): void {
+    this.updateDepth();
+  }
+
   private initializeComponents(engine: Engine): void {
     const actionComponent = new ActionsComponent();
     this.addComponent(actionComponent);
@@ -66,6 +70,10 @@ export class Tile extends FloatingActor {
       this.tileX += diffTileX;
       this.tileY += diffTileY;
     }
+  }
+
+  private updateDepth(): void {
+    this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
   }
 
   private *actMove(direction: Direction): ActionGenerator {
