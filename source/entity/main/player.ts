@@ -21,6 +21,7 @@ import {
   TILE_DIMENSTION
 } from "/source/entity/main/field";
 import {
+  Direction,
   calcVectorFromDirection
 } from "/source/util/misc";
 
@@ -69,13 +70,7 @@ export class Player extends FloatingActor {
       const direction = this.determineDirection();
       if (direction !== null) {
         const directionVector = calcVectorFromDirection(direction);
-        const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
-        const action = function *(this: Player): Generator<unknown, void, number> {
-          this.moving = true;
-          yield* moveTo(this, this.pos.add(diffPos), 150);
-          this.moving = false;
-        };
-        actionManager.addAction(action.bind(this));
+        actionManager.addAction(() => this.actMove(direction));
         this.field.moveTiles(this.tileX, this.tileY, direction);
         this.tileX += directionVector.x;
         this.tileY += directionVector.y;
@@ -83,7 +78,15 @@ export class Player extends FloatingActor {
     }
   }
 
-  private determineDirection(): "right" | "left" | "down" | "up" | null {
+  private *actMove(direction: Direction): Generator<unknown, void, number> {
+    const directionVector = calcVectorFromDirection(direction);
+    const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
+    this.moving = true;
+    yield* moveTo(this, this.pos.add(diffPos), 140);
+    this.moving = false;
+  }
+
+  private determineDirection(): Direction | null {
     const inputManager = this.get(InputManagerComponent)!;
     const {primaryX, primaryY} = inputManager;
     if (primaryX >= 0.75) {

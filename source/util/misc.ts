@@ -28,7 +28,7 @@ export function lerp(start: any, end: any, ratio: number): number | Vector {
   }
 }
 
-export function calcVectorFromDirection(direction: "right" | "left" | "down" | "up"): Vector {
+export function calcVectorFromDirection(direction: Direction): Vector {
   if (direction === "right") {
     return vec(1, 0);
   } else if (direction === "left") {
@@ -45,3 +45,5 @@ export function calcVectorFromDirection(direction: "right" | "left" | "down" | "
 export function randomize(random: Random, value: number): number {
   return random.integer(value / 2, value * 3 / 2);
 }
+
+export type Direction = "right" | "left" | "down" | "up";

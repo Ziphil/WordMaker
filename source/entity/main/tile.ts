@@ -18,6 +18,7 @@ import {
   TILE_DIMENSTION
 } from "/source/entity/main/field";
 import {
+  Direction,
   calcVectorFromDirection
 } from "/source/util/misc";
 
@@ -53,20 +54,22 @@ export class Tile extends FloatingActor {
     this.addComponent(actionComponent);
   }
 
-  public move(direction: "right" | "left" | "down" | "up"): void {
+  public move(direction: Direction): void {
     const actionManager = this.get(ActionManagerComponent)!;
     if (!this.moving) {
       const directionVector = calcVectorFromDirection(direction);
-      const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
-      const action = function *(this: Tile): Generator<unknown, void, number> {
-        this.moving = true;
-        yield* moveTo(this, this.pos.add(diffPos), 150);
-        this.moving = false;
-      };
-      actionManager.addAction(action.bind(this));
+      actionManager.addAction(() => this.actMove(direction));
       this.tileX += directionVector.x;
       this.tileY += directionVector.y;
     }
+  }
+
+  private *actMove(direction: Direction): Generator<unknown, void, number> {
+    const directionVector = calcVectorFromDirection(direction);
+    const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
+    this.moving = true;
+    yield* moveTo(this, this.pos.add(diffPos), 140);
+    this.moving = false;
   }
 
 }

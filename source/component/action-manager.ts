@@ -10,25 +10,28 @@ import {
   Vector
 } from "excalibur";
 import {
-  clamp, lerp
+  clamp,
+  lerp
 } from "/source/util/misc";
 
 
 const ACTION_MANAGER_COMPONENT_TYPE = "zp.actionManager" as const;
 const ACTION_MANAGER_SYSTEM_TYPES = ["zp.actionManager", "ex.transform"] as const;
 
+export type ActionGenerator = Generator<unknown, void, number>;
+
 
 export class ActionManagerComponent extends Component<typeof ACTION_MANAGER_COMPONENT_TYPE> {
 
   public readonly type: any = ACTION_MANAGER_COMPONENT_TYPE;
-  public generators: Array<Generator<unknown, void, number>>;
+  public generators: Array<ActionGenerator>;
 
   public constructor() {
     super();
     this.generators = [];
   }
 
-  public addAction(action: () => Generator<unknown, void, number>): void {
+  public addAction(action: () => ActionGenerator): void {
     const generator = action();
     generator.next();
     this.generators.push(generator);
@@ -66,7 +69,7 @@ export class ActionManagerSystem extends System<ActionManagerComponent | Transfo
 }
 
 
-export function *moveTo(entity: Actor, destPos: Vector, duration: number): Generator<unknown, void, number> {
+export function *moveTo(entity: Actor, destPos: Vector, duration: number): ActionGenerator {
   let timer = 0;
   const initialPos = entity.pos.clone();
   while (true) {
