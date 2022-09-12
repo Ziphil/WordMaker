@@ -64,12 +64,12 @@ export class Player extends FloatingActor {
   }
 
   private move(): void {
-    const actionManager = this.get(ActionsComponent)!;
+    const actions = this.get(ActionsComponent)!;
     if (!this.moving) {
       const direction = this.determineDirection();
       if (direction !== null) {
         const directionVector = calcVectorFromDirection(direction);
-        actionManager.addAction(() => this.actMove(direction));
+        actions.addAction(() => this.actMove(direction));
         this.field.moveTiles(this.tileX, this.tileY, direction);
         this.tileX += directionVector.x;
         this.tileY += directionVector.y;
@@ -86,8 +86,8 @@ export class Player extends FloatingActor {
   }
 
   private determineDirection(): Direction | null {
-    const inputManager = this.get(InputComponent)!;
-    const {primaryX, primaryY} = inputManager;
+    const input = this.get(InputComponent)!;
+    const {primaryX, primaryY} = input;
     if (primaryX >= 0.75) {
       return "right";
     } else if (primaryX <= -0.75) {

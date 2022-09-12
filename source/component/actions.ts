@@ -36,6 +36,24 @@ export class ActionsComponent extends Component<typeof ACTIONS_COMPONENT_TYPE> {
     this.generators.push(generator);
   }
 
+  public *actMoveTo(destPos: Vector, duration: number): ActionGenerator {
+    const entity = this.owner;
+    if (entity !== null && entity instanceof Actor) {
+      let timer = 0;
+      const initialPos = entity.pos.clone();
+      while (true) {
+        timer += yield;
+        const ratio = clamp(timer / duration, 0, 1);
+        entity.pos = lerp(initialPos, destPos, ratio);
+        if (timer >= duration) {
+          break;
+        }
+      }
+    } else {
+      throw new Error("entity is not an actor");
+    }
+  }
+
 }
 
 
@@ -46,11 +64,11 @@ export class ActionsSystem extends System<ActionsComponent> {
 
   public override update(entities: Array<Entity>, delta: number): void {
     for (const entity of entities) {
-      this.performAction(entity, delta);
+      this.runActions(entity, delta);
     }
   }
 
-  private performAction(entity: Entity, delta: number): void {
+  private runActions(entity: Entity, delta: number): void {
     const actions = entity.get(ActionsComponent)!;
     const deletedIndices = [] as Array<number>;
     for (let i = 0 ; i < actions.generators.length ; i ++) {
