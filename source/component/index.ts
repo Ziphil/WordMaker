@@ -1,5 +1,5 @@
 //
 
-export * from "./actions";
+export * from "./stories";
 export * from "./input";
 export * from "./timer";

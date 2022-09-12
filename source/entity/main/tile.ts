@@ -5,11 +5,8 @@ import {
   vec
 } from "excalibur";
 import {
-  ActionGenerator,
-  ActionsComponent,
-  fadeOut,
-  moveTo,
-  parallel
+  StoriesComponent,
+  StoryGenerator
 } from "/source/component";
 import {
   ASSETS
@@ -21,6 +18,9 @@ import {
   FIELD_PROPS,
   TILE_DIMENSTION
 } from "/source/entity/main/field";
+import {
+  parallel
+} from "/source/util/generator";
 import {
   Direction,
   calcDirectionDiff
@@ -47,26 +47,25 @@ export class Tile extends FloatingActor {
     this.tileY = tileY;
     this.moving = false;
     this.graphics.use(ASSETS.block.toSprite());
+    this.initializeComponents();
   }
 
   public override onInitialize(engine: Engine): void {
-    this.initializeComponents(engine);
   }
 
   public override onPreUpdate(engine: Engine): void {
     this.updateDepth();
   }
 
-  private initializeComponents(engine: Engine): void {
-    const actionComponent = new ActionsComponent();
+  private initializeComponents(): void {
+    const actionComponent = new StoriesComponent();
     this.addComponent(actionComponent);
   }
 
   public move(direction: Direction): void {
-    const actions = this.get(ActionsComponent)!;
     if (!this.moving) {
       const [diffTileX, diffTileY] = calcDirectionDiff(direction);
-      actions.addAction(() => this.actMove(direction));
+      this.stories.addStory(() => this.storyMove(direction));
       this.tileX += diffTileX;
       this.tileY += diffTileY;
     }
@@ -76,24 +75,28 @@ export class Tile extends FloatingActor {
     this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
   }
 
-  private *actMove(direction: Direction): ActionGenerator {
+  private *storyMove(direction: Direction): StoryGenerator {
     const [diffTileX, diffTileY] = calcDirectionDiff(direction);
     const diffX = diffTileX * TILE_DIMENSTION.width;
     const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* moveTo(this, this.pos.add(vec(diffX, diffY)), 140);
+    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), 140);
     this.moving = false;
-    yield* this.actDie();
+    yield* this.storyDie();
   }
 
-  private *actDie(): ActionGenerator {
+  private *storyDie(): StoryGenerator {
     if (isEdge(this.tileX, this.tileY)) {
       yield* parallel(
-        moveTo(this, this.pos.add(vec(0, 4)), 100),
-        fadeOut(this, 100)
+        this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
+        this.stories.storyFadeOut(100)
       );
       this.kill();
     }
+  }
+
+  private get stories(): StoriesComponent {
+    return this.get(StoriesComponent)!;
   }
 
 }

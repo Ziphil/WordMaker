@@ -6,8 +6,8 @@ import {
   SceneActivationContext
 } from "excalibur";
 import {
-  ActionsSystem,
   InputSystem,
+  StoriesSystem,
   TimerSystem
 } from "/source/component";
 import {
@@ -22,10 +22,10 @@ export class MainScene extends Scene {
 
   public constructor() {
     super();
+    this.initializeSystems();
   }
 
   public override onInitialize(engine: Engine): void {
-    this.initializeSystems();
   }
 
   public override onActivate({engine}: SceneActivationContext<unknown>): void {
@@ -38,7 +38,7 @@ export class MainScene extends Scene {
 
   private initializeSystems(): void {
     this.world.add(new InputSystem());
-    this.world.add(new ActionsSystem());
+    this.world.add(new StoriesSystem());
     this.world.add(new TimerSystem());
   }
 

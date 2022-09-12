@@ -7,10 +7,9 @@ import {
   vec
 } from "excalibur";
 import {
-  ActionGenerator,
-  ActionsComponent,
   InputComponent,
-  moveTo
+  StoriesComponent,
+  StoryGenerator
 } from "/source/component";
 import {
   FloatingActor
@@ -47,10 +46,10 @@ export class Player extends FloatingActor {
     this.tileY = tileY;
     this.moving = false;
     this.graphics.use(new Circle({radius: 8, color: Color.fromHex("#000000")}));
+    this.initializeComponents();
   }
 
   public override onInitialize(engine: Engine): void {
-    this.initializeComponents(engine);
   }
 
   public override onPreUpdate(engine: Engine, delta: number): void {
@@ -58,20 +57,19 @@ export class Player extends FloatingActor {
     this.updateDepth();
   }
 
-  private initializeComponents(engine: Engine): void {
-    const inputComponent = new InputComponent();
-    const actionComponent = new ActionsComponent();
-    this.addComponent(inputComponent);
-    this.addComponent(actionComponent);
+  private initializeComponents(): void {
+    const inputComponrnt = new InputComponent();
+    const storiesComponent = new StoriesComponent();
+    this.addComponent(inputComponrnt);
+    this.addComponent(storiesComponent);
   }
 
   private move(): void {
-    const actions = this.get(ActionsComponent)!;
     if (!this.moving) {
       const direction = this.determineDirection();
       if (direction !== null) {
         const [diffTileX, diffTileY] = calcDirectionDiff(direction);
-        actions.addAction(() => this.actMove(direction));
+        this.stories.addStory(() => this.storyMove(direction));
         this.field.moveTiles(this.tileX, this.tileY, direction);
         this.tileX += diffTileX;
         this.tileY += diffTileY;
@@ -83,18 +81,17 @@ export class Player extends FloatingActor {
     this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
   }
 
-  private *actMove(direction: Direction): ActionGenerator {
+  private *storyMove(direction: Direction): StoryGenerator {
     const [diffTileX, diffTileY] = calcDirectionDiff(direction);
     const diffX = diffTileX * TILE_DIMENSTION.width;
     const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* moveTo(this, this.pos.add(vec(diffX, diffY)), 140);
+    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), 140);
     this.moving = false;
   }
 
   private determineDirection(): Direction | null {
-    const input = this.get(InputComponent)!;
-    const {primaryX, primaryY} = input;
+    const {primaryX, primaryY} = this.input;
     if (primaryX >= 0.75) {
       return "right";
     } else if (primaryX <= -0.75) {
@@ -106,6 +103,14 @@ export class Player extends FloatingActor {
     } else {
       return null;
     }
+  }
+
+  private get input(): InputComponent {
+    return this.get(InputComponent)!;
+  }
+
+  private get stories(): StoriesComponent {
+    return this.get(StoriesComponent)!;
   }
 
 }
