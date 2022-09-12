@@ -7,12 +7,11 @@ import {
   vec
 } from "excalibur";
 import {
-  InputManagerComponent
-} from "/source/component";
-import {
-  ActionManagerComponent,
+  ActionGenerator,
+  ActionsComponent,
+  InputComponent,
   moveTo
-} from "/source/component/action-manager";
+} from "/source/component";
 import {
   FloatingActor
 } from "/source/entity/floating-actor";
@@ -58,14 +57,14 @@ export class Player extends FloatingActor {
   }
 
   private initializeComponents(engine: Engine): void {
-    const inputComponent = new InputManagerComponent();
-    const actionComponent = new ActionManagerComponent();
+    const inputComponent = new InputComponent();
+    const actionComponent = new ActionsComponent();
     this.addComponent(inputComponent);
     this.addComponent(actionComponent);
   }
 
   private move(): void {
-    const actionManager = this.get(ActionManagerComponent)!;
+    const actionManager = this.get(ActionsComponent)!;
     if (!this.moving) {
       const direction = this.determineDirection();
       if (direction !== null) {
@@ -78,7 +77,7 @@ export class Player extends FloatingActor {
     }
   }
 
-  private *actMove(direction: Direction): Generator<unknown, void, number> {
+  private *actMove(direction: Direction): ActionGenerator {
     const directionVector = calcVectorFromDirection(direction);
     const diffPos = directionVector.scale(vec(TILE_DIMENSTION.width, TILE_DIMENSTION.height));
     this.moving = true;
@@ -87,7 +86,7 @@ export class Player extends FloatingActor {
   }
 
   private determineDirection(): Direction | null {
-    const inputManager = this.get(InputManagerComponent)!;
+    const inputManager = this.get(InputComponent)!;
     const {primaryX, primaryY} = inputManager;
     if (primaryX >= 0.75) {
       return "right";

@@ -6,7 +6,6 @@ import {
   Entity,
   System,
   SystemType,
-  TransformComponent,
   Vector
 } from "excalibur";
 import {
@@ -15,15 +14,15 @@ import {
 } from "/source/util/misc";
 
 
-const ACTION_MANAGER_COMPONENT_TYPE = "zp.actionManager" as const;
-const ACTION_MANAGER_SYSTEM_TYPES = ["zp.actionManager", "ex.transform"] as const;
+const ACTIONS_COMPONENT_TYPE = "zp.actions" as const;
+const ACTIONS_SYSTEM_TYPES = ["zp.actions"] as const;
 
 export type ActionGenerator = Generator<unknown, void, number>;
 
 
-export class ActionManagerComponent extends Component<typeof ACTION_MANAGER_COMPONENT_TYPE> {
+export class ActionsComponent extends Component<typeof ACTIONS_COMPONENT_TYPE> {
 
-  public readonly type: any = ACTION_MANAGER_COMPONENT_TYPE;
+  public readonly type: any = ACTIONS_COMPONENT_TYPE;
   public generators: Array<ActionGenerator>;
 
   public constructor() {
@@ -40,9 +39,9 @@ export class ActionManagerComponent extends Component<typeof ACTION_MANAGER_COMP
 }
 
 
-export class ActionManagerSystem extends System<ActionManagerComponent | TransformComponent> {
+export class ActionsSystem extends System<ActionsComponent> {
 
-  public readonly types: any = ACTION_MANAGER_SYSTEM_TYPES;
+  public readonly types: any = ACTIONS_SYSTEM_TYPES;
   public readonly systemType: SystemType = SystemType["Update"];
 
   public override update(entities: Array<Entity>, delta: number): void {
@@ -52,17 +51,17 @@ export class ActionManagerSystem extends System<ActionManagerComponent | Transfo
   }
 
   private performAction(entity: Entity, delta: number): void {
-    const component = entity.get(ActionManagerComponent)!;
+    const actions = entity.get(ActionsComponent)!;
     const deletedIndices = [] as Array<number>;
-    for (let i = 0 ; i < component.generators.length ; i ++) {
-      const generator = component.generators[i];
+    for (let i = 0 ; i < actions.generators.length ; i ++) {
+      const generator = actions.generators[i];
       const result = generator.next(delta);
       if (result.done) {
         deletedIndices.push(i);
       }
     }
     if (deletedIndices.length > 0) {
-      component.generators = component.generators.filter((dummy, index) => !deletedIndices.includes(index));
+      actions.generators = actions.generators.filter((dummy, index) => !deletedIndices.includes(index));
     }
   }
 

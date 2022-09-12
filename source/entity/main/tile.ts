@@ -5,9 +5,9 @@ import {
   vec
 } from "excalibur";
 import {
-  ActionManagerComponent,
+  ActionsComponent,
   moveTo
-} from "/source/component/action-manager";
+} from "/source/component";
 import {
   ASSETS
 } from "/source/core/asset";
@@ -50,12 +50,12 @@ export class Tile extends FloatingActor {
   }
 
   private initializeComponents(engine: Engine): void {
-    const actionComponent = new ActionManagerComponent();
+    const actionComponent = new ActionsComponent();
     this.addComponent(actionComponent);
   }
 
   public move(direction: Direction): void {
-    const actionManager = this.get(ActionManagerComponent)!;
+    const actionManager = this.get(ActionsComponent)!;
     if (!this.moving) {
       const directionVector = calcVectorFromDirection(direction);
       actionManager.addAction(() => this.actMove(direction));

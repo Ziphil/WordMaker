@@ -1,5 +1,5 @@
 //
 
-export * from "./action-manager";
-export * from "./input-manager";
+export * from "./actions";
+export * from "./input";
 export * from "./timer";
