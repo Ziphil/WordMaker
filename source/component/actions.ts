@@ -44,7 +44,8 @@ export class ActionsComponent extends Component<typeof ACTIONS_COMPONENT_TYPE> {
       while (true) {
         timer += yield;
         const ratio = clamp(timer / duration, 0, 1);
-        entity.pos = lerp(initialPos, destPos, ratio);
+        const pos = lerp(initialPos, destPos, ratio);
+        entity.pos = pos;
         if (timer >= duration) {
           break;
         }
@@ -92,8 +93,35 @@ export function *moveTo(entity: Actor, destPos: Vector, duration: number): Actio
   while (true) {
     timer += yield;
     const ratio = clamp(timer / duration, 0, 1);
-    entity.pos = lerp(initialPos, destPos, ratio);
+    const pos = lerp(initialPos, destPos, ratio);
+    entity.pos = pos;
     if (timer >= duration) {
+      break;
+    }
+  }
+}
+
+export function *fadeOut(entity: Actor, duration: number): ActionGenerator {
+  let timer = 0;
+  while (true) {
+    timer += yield;
+    const ratio = clamp(timer / duration, 0, 1);
+    const opacity = lerp(1, 0, ratio);
+    entity.graphics.opacity = opacity;
+    if (timer >= duration) {
+      break;
+    }
+  }
+}
+
+export function *parallel<N>(...generators: Array<Generator<unknown, void, N>>): Generator<unknown, void, N> {
+  while (true) {
+    const elapsed = yield;
+    const results = [];
+    for (const generator of generators) {
+      results.push(generator.next(elapsed));
+    }
+    if (results.every((result) => result.done)) {
       break;
     }
   }

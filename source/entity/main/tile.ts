@@ -7,7 +7,9 @@ import {
 import {
   ActionGenerator,
   ActionsComponent,
-  moveTo
+  fadeOut,
+  moveTo,
+  parallel
 } from "/source/component";
 import {
   ASSETS
@@ -16,6 +18,7 @@ import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
+  FIELD_PROPS,
   TILE_DIMENSTION
 } from "/source/entity/main/field";
 import {
@@ -72,6 +75,23 @@ export class Tile extends FloatingActor {
     this.moving = true;
     yield* moveTo(this, this.pos.add(vec(diffX, diffY)), 140);
     this.moving = false;
+    yield* this.actDie();
   }
 
+  private *actDie(): ActionGenerator {
+    if (isEdge(this.tileX, this.tileY)) {
+      yield* parallel(
+        moveTo(this, this.pos.add(vec(0, 4)), 100),
+        fadeOut(this, 100)
+      );
+      this.unparent();
+    }
+  }
+
+}
+
+
+function isEdge(tileX: number, tileY: number): boolean {
+  const {tileWidth, tileHeight} = FIELD_PROPS;
+  return tileX % tileWidth === 0 || tileX % tileWidth === tileWidth - 1 || tileY % tileHeight === 0 || tileY % tileHeight === tileHeight - 1;
 }
