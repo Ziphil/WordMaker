@@ -14,6 +14,7 @@ import {
 } from "/source/entity/floating-actor";
 import {
   FIELD_PROPS,
+  Field,
   TILE_DIMENSTION
 } from "/source/entity/main/field";
 import {
@@ -38,6 +39,7 @@ export class Tile extends FloatingActor {
   public tileY: number;
   public index: number;
   public moving: boolean;
+  public field!: Field;
 
   public constructor({tileX, tileY, ...configs}: BlockConfigs) {
     super({
@@ -88,6 +90,7 @@ export class Tile extends FloatingActor {
 
   private *storyDie(): StoryGenerator {
     if (isEdge(this.tileX, this.tileY)) {
+      this.field.addTile();
       yield* parallel(
         this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
         this.stories.storyFadeOut(100)
