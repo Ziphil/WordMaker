@@ -55,6 +55,24 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
     }
   }
 
+  public *storyFadeIn(duration: number): StoryGenerator {
+    const entity = this.owner;
+    if (entity !== null && entity instanceof Actor) {
+      let timer = 0;
+      while (true) {
+        timer += yield;
+        const ratio = clamp(timer / duration, 0, 1);
+        const opacity = lerp(0, 1, ratio);
+        entity.graphics.opacity = opacity;
+        if (timer >= duration) {
+          break;
+        }
+      }
+    } else {
+      throw new Error("entity is not an actor");
+    }
+  }
+
   public *storyFadeOut(duration: number): StoryGenerator {
     const entity = this.owner;
     if (entity !== null && entity instanceof Actor) {

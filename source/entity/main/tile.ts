@@ -8,7 +8,9 @@ import {
   StoriesComponent,
   StoryGenerator
 } from "/source/component";
-import {SPRITE_SHEETS} from "/source/core/asset";
+import {
+  SPRITE_SHEETS
+} from "/source/core/asset";
 import {
   FloatingActor
 } from "/source/entity/floating-actor";
@@ -38,22 +40,25 @@ export class Tile extends FloatingActor {
   public tileX: number;
   public tileY: number;
   public index: number;
+  public state: "appearing" | "normal" | "dying";
   public moving: boolean;
   public field!: Field;
 
   public constructor({tileX, tileY, ...configs}: BlockConfigs) {
     super({
-      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height)
+      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height - 4)
     });
     this.tileX = tileX;
     this.tileY = tileY;
     this.index = configs.index;
+    this.state = "appearing";
     this.moving = false;
     this.graphics.use(SPRITE_SHEETS.block.sprites[configs.index]);
     this.initializeComponents();
   }
 
   public override onInitialize(engine: Engine): void {
+    this.appear();
   }
 
   public override onPreUpdate(engine: Engine): void {
@@ -63,6 +68,11 @@ export class Tile extends FloatingActor {
   private initializeComponents(): void {
     const actionComponent = new StoriesComponent();
     this.addComponent(actionComponent);
+  }
+
+  private appear(): void {
+    this.graphics.opacity = 0;
+    this.stories.addStory(() => this.storyAppear());
   }
 
   public move(direction: Direction): void {
@@ -78,6 +88,14 @@ export class Tile extends FloatingActor {
     this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
   }
 
+  private *storyAppear(): StoryGenerator {
+    yield* parallel(
+      this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
+      this.stories.storyFadeIn(100)
+    );
+    this.state = "normal";
+  }
+
   private *storyMove(direction: Direction): StoryGenerator {
     const [diffTileX, diffTileY] = calcDirectionDiff(direction);
     const diffX = diffTileX * TILE_DIMENSTION.width;
@@ -90,6 +108,7 @@ export class Tile extends FloatingActor {
 
   private *storyDie(): StoryGenerator {
     if (isEdge(this.tileX, this.tileY)) {
+      this.state = "dying";
       this.field.addTile();
       yield* parallel(
         this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),

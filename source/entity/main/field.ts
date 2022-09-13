@@ -19,12 +19,12 @@ import {
 
 
 export const TILE_DIMENSTION = {
-  width: 19,
-  height: 19
+  width: 21,
+  height: 21
 };
 export const FIELD_PROPS = {
-  tileWidth: 12,
-  tileHeight: 12
+  tileWidth: 15,
+  tileHeight: 15
 };
 
 
