@@ -13,9 +13,6 @@ import {
 import {
   Field
 } from "/source/entity/main/field";
-import {
-  Player
-} from "/source/entity/main/player";
 
 
 export class MainScene extends Scene {
@@ -43,10 +40,7 @@ export class MainScene extends Scene {
   }
 
   private addEntities(): void {
-    const player = new Player({tileX: 8, tileY: 8});
     const field = new Field();
-    player.field = field;
-    this.add(player);
     this.add(field);
   }
 

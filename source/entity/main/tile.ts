@@ -8,9 +8,7 @@ import {
   StoriesComponent,
   StoryGenerator
 } from "/source/component";
-import {
-  ASSETS
-} from "/source/core/asset";
+import {SPRITE_SHEETS} from "/source/core/asset";
 import {
   FloatingActor
 } from "/source/entity/floating-actor";
@@ -29,7 +27,8 @@ import {
 
 export type BlockConfigs = {
   tileX: number,
-  tileY: number
+  tileY: number,
+  index: number
 };
 
 
@@ -37,6 +36,7 @@ export class Tile extends FloatingActor {
 
   public tileX: number;
   public tileY: number;
+  public index: number;
   public moving: boolean;
 
   public constructor({tileX, tileY, ...configs}: BlockConfigs) {
@@ -45,8 +45,9 @@ export class Tile extends FloatingActor {
     });
     this.tileX = tileX;
     this.tileY = tileY;
+    this.index = configs.index;
     this.moving = false;
-    this.graphics.use(ASSETS.block.toSprite());
+    this.graphics.use(SPRITE_SHEETS.block.sprites[configs.index]);
     this.initializeComponents();
   }
 

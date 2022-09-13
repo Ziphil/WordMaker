@@ -1,7 +1,8 @@
 //
 
 import {
-  ImageSource
+  ImageSource,
+  SpriteSheet
 } from "excalibur";
 
 
@@ -10,6 +11,15 @@ export const ASSETS = {
 };
 
 export const SPRITE_SHEETS = {
+  block: SpriteSheet.fromImageSource({
+    image: ASSETS.block,
+    grid: {
+      rows: 4,
+      columns: 6,
+      spriteWidth: 20,
+      spriteHeight: 23
+    }
+  })
 };
 
 export const SPRITE_FONTS = {

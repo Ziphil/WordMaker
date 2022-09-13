@@ -8,6 +8,9 @@ import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
+  Player
+} from "/source/entity/main/player";
+import {
   Tile
 } from "/source/entity/main/tile";
 import {
@@ -16,18 +19,19 @@ import {
 
 
 export const TILE_DIMENSTION = {
-  width: 15,
-  height: 15
+  width: 19,
+  height: 19
 };
 export const FIELD_PROPS = {
-  tileWidth: 18,
-  tileHeight: 18
+  tileWidth: 12,
+  tileHeight: 12
 };
 
 
 export class Field extends FloatingActor {
 
   private readonly tiles: Array<Tile | undefined>;
+  private player!: Player;
 
   public constructor() {
     super({
@@ -39,23 +43,29 @@ export class Field extends FloatingActor {
   }
 
   public override onInitialize(engine: Engine): void {
-    this.addTile(1, 1);
-    this.addTile(2, 3);
-    this.addTile(2, 4);
-    this.addTile(1, 5);
-    this.addTile(3, 6);
-    this.addTile(4, 6);
+    this.addPlayer();
+    for (let i = 0 ; i < 30 ; i ++) {
+      this.addTile();
+    }
   }
 
-  private addTile(tileX: number, tileY: number): void {
+  private addTile(): void {
+    const [tileX, tileY] = this.getRandomEmptyTilePos();
     const index = tileX + tileY * FIELD_PROPS.tileWidth;
     if (this.tiles[index] === undefined) {
-      const tile = new Tile({tileX, tileY});
+      const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 20)});
       this.tiles[index] = tile;
       this.addChild(tile);
     } else {
       throw new Error(`tile already exists at (${tileX}, ${tileY})`);
     }
+  }
+
+  private addPlayer(): void {
+    const player = new Player({tileX: 8, tileY: 8});
+    player.field = this;
+    this.player = player;
+    this.addChild(player);
   }
 
   public moveTiles(tileX: number, tileY: number, direction: "right" | "left" | "down" | "up"): void {
@@ -83,6 +93,23 @@ export class Field extends FloatingActor {
       this.setTile(tileX, tileY, tile);
     }
     console.log(toTileString(this.tiles));
+  }
+
+  private getRandomEmptyTilePos(): [number, number] {
+    const modifiedTiles = this.tiles.map((tile, index) => {
+      const tileX = index % FIELD_PROPS.tileWidth;
+      const tileY = Math.floor(index / FIELD_PROPS.tileWidth);
+      return {tile, tileX, tileY};
+    });
+    const emptyTiles = modifiedTiles.filter(({tile, tileX, tileY}) => {
+      const onPlayer = this.player.tileX === tileX && this.player.tileY === tileY;
+      const onOtherTile = tile !== undefined;
+      const onEdge = isEdge(tileX, tileY);
+      return !onPlayer && !onOtherTile && !onEdge;
+    });
+    const emptyIndex = Math.floor(Math.random() * emptyTiles.length);
+    const {tileX, tileY} = emptyTiles[emptyIndex];
+    return [tileX, tileY];
   }
 
   private getTile(tileX: number, tileY: number): Tile | undefined {
