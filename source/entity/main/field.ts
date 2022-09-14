@@ -4,6 +4,7 @@ import {
   Color,
   Engine
 } from "excalibur";
+import DATA from "/source/data/data.json";
 import {
   FloatingActor
 } from "/source/entity/floating-actor";
@@ -16,6 +17,10 @@ import {
 import {
   calcDirectionDiff
 } from "/source/util/misc";
+import {
+  convertIndexToKey,
+  searchString
+} from "/source/util/word";
 
 
 export const TILE_DIMENSTION = {
@@ -26,6 +31,9 @@ export const FIELD_PROPS = {
   tileWidth: 15,
   tileHeight: 15
 };
+
+export type TilePoss = Array<[number, number]>;
+export type SearchResults = Array<[key: string, tilePoss: Array<[number, number]>]>;
 
 
 export class Field extends FloatingActor {
@@ -94,6 +102,41 @@ export class Field extends FloatingActor {
       this.setTile(tileX, tileY, tile);
     }
     console.log(toTileString(this.tiles));
+  }
+
+  private searchWords(): SearchResults {
+    const results = [];
+    for (let tileX = 0 ; tileX < FIELD_PROPS.tileWidth ; tileX ++) {
+      for (let tileY = 0 ; tileY < FIELD_PROPS.tileHeight ; tileY ++) {
+        const rightResults = this.searchWordsAt(tileX, tileY, "right");
+        const downResults = this.searchWordsAt(tileX, tileY, "down");
+        results.push(...rightResults);
+        results.push(...downResults);
+      }
+    }
+    return results;
+  }
+
+  private searchWordsAt(tileX: number, tileY: number, direction: "right" | "down"): SearchResults {
+    const [diffTileX, diffTileY] = calcDirectionDiff(direction);
+    let currentKey = "";
+    const results = [] as SearchResults;
+    const currentTilePoss = [] as TilePoss;
+    while (true) {
+      const tile = this.getTile(tileX, tileY);
+      if (tile !== undefined && tile.state === "normal") {
+        currentKey += convertIndexToKey(tile.index);
+        currentTilePoss.push([tileX, tileY]);
+        if (currentKey.length >= 3 && searchString(DATA.keys, currentKey)) {
+          results.push([currentKey, currentTilePoss]);
+        }
+      } else {
+        break;
+      }
+      tileX += diffTileX;
+      tileY += diffTileY;
+    }
+    return results;
   }
 
   private getRandomEmptyTilePos(): [number, number] {
