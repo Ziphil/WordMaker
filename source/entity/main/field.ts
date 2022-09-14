@@ -61,7 +61,7 @@ export class Field extends FloatingActor {
     const [tileX, tileY] = this.getRandomEmptyTilePos();
     const index = tileX + tileY * FIELD_PROPS.tileWidth;
     if (this.tiles[index] === undefined) {
-      const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 20)});
+      const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 38)});
       tile.field = this;
       this.tiles[index] = tile;
       this.addChild(tile);

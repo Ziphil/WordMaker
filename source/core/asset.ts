@@ -14,7 +14,7 @@ export const SPRITE_SHEETS = {
   block: SpriteSheet.fromImageSource({
     image: ASSETS.block,
     grid: {
-      rows: 4,
+      rows: 7,
       columns: 6,
       spriteWidth: 20,
       spriteHeight: 23
