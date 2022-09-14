@@ -114,6 +114,7 @@ export class Tile extends FloatingActor {
         this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
         this.stories.storyFadeOut(100)
       );
+      this.unparent();
       this.kill();
     }
   }
