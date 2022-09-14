@@ -41,7 +41,7 @@ export class Tile extends FloatingActor {
   public tileX: number;
   public tileY: number;
   public index: number;
-  public state: "appearing" | "normal" | "dying";
+  public state: "appearing" | "normal" | "disappearing" | "dying";
   public moving: boolean;
   public field!: Field;
 
@@ -76,6 +76,10 @@ export class Tile extends FloatingActor {
     this.stories.addStory(() => this.storyAppear());
   }
 
+  public disappear(): void {
+    this.stories.addStory(() => this.storyDisappear());
+  }
+
   public move(direction: Direction): void {
     if (!this.moving) {
       const [diffTileX, diffTileY] = calcDirectionDiff(direction);
@@ -95,6 +99,16 @@ export class Tile extends FloatingActor {
       this.stories.storyFadeIn(100)
     );
     this.state = "normal";
+  }
+
+  private *storyDisappear(): StoryGenerator {
+    this.state = "disappearing";
+    yield* parallel(
+      this.stories.storyMoveTo(this.pos.add(vec(0, -4)), 100),
+      this.stories.storyFadeOut(100)
+    );
+    this.unparent();
+    this.kill();
   }
 
   private *storyMove(direction: Direction): StoryGenerator {

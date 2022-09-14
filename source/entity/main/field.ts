@@ -4,6 +4,10 @@ import {
   Color,
   Engine
 } from "excalibur";
+import {
+  StoriesComponent,
+  StoryGenerator
+} from "/source/component";
 import DATA from "/source/data/data.json";
 import {
   FloatingActor
@@ -48,6 +52,7 @@ export class Field extends FloatingActor {
       color: Color.fromHex("#00000022")
     });
     this.tiles = Array.from({length: FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight});
+    this.initializeComponents();
   }
 
   public override onInitialize(engine: Engine): void {
@@ -55,6 +60,11 @@ export class Field extends FloatingActor {
     for (let i = 0 ; i < 30 ; i ++) {
       this.addTile();
     }
+  }
+
+  private initializeComponents(): void {
+    const actionComponent = new StoriesComponent();
+    this.addComponent(actionComponent);
   }
 
   public addTile(): void {
@@ -101,7 +111,25 @@ export class Field extends FloatingActor {
     for (const {tileX, tileY, tile} of updatedTiles) {
       this.setTile(tileX, tileY, tile);
     }
-    console.log(toTileString(this.tiles));
+    const story = function *(this: Field): StoryGenerator {
+      yield* this.stories.storyWait(140);
+      this.disappearMatchedTiles();
+    };
+    this.stories.addStory(story.bind(this));
+  }
+
+  private disappearMatchedTiles(): void {
+    const results = this.searchWords();
+    for (const [key, tilePoss] of results) {
+      for (const [tileX, tileY] of tilePoss) {
+        const tile = this.getTile(tileX, tileY);
+        if (tile !== undefined) {
+          this.setTile(tileX, tileY, undefined);
+          this.addTile();
+          tile.disappear();
+        }
+      }
+    }
   }
 
   private searchWords(): SearchResults {
@@ -127,7 +155,7 @@ export class Field extends FloatingActor {
       if (tile !== undefined && tile.state === "normal") {
         currentKey += convertIndexToKey(tile.index);
         currentTilePoss.push([tileX, tileY]);
-        if (currentKey.length >= 3 && searchString(DATA.keys, currentKey)) {
+        if (currentKey.length >= 3 && (true || searchString(DATA.keys, currentKey))) {
           results.push([currentKey, currentTilePoss]);
         }
       } else {
@@ -164,6 +192,10 @@ export class Field extends FloatingActor {
   private setTile(tileX: number, tileY: number, tile: Tile | undefined): void {
     const index = tileX + tileY * FIELD_PROPS.tileWidth;
     this.tiles[index] = tile;
+  }
+
+  private get stories(): StoriesComponent {
+    return this.get(StoriesComponent)!;
   }
 
 }

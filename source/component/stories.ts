@@ -36,6 +36,16 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
     this.generators.push(generator);
   }
 
+  public *storyWait(duration: number): StoryGenerator {
+    let timer = 0;
+    while (true) {
+      timer += yield;
+      if (timer >= duration) {
+        break;
+      }
+    }
+  }
+
   public *storyMoveTo(destPos: Vector, duration: number): StoryGenerator {
     const entity = this.owner;
     if (entity !== null && entity instanceof Actor) {
