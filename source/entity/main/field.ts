@@ -169,7 +169,7 @@ export class Field extends FloatingActor {
 }
 
 
-function isEdge(tileX: number, tileY: number): boolean {
+export function isEdge(tileX: number, tileY: number): boolean {
   const {tileWidth, tileHeight} = FIELD_PROPS;
   return tileX % tileWidth === 0 || tileX % tileWidth === tileWidth - 1 || tileY % tileHeight === 0 || tileY % tileHeight === tileHeight - 1;
 }

@@ -17,7 +17,8 @@ import {
 import {
   FIELD_PROPS,
   Field,
-  TILE_DIMENSTION
+  TILE_DIMENSTION,
+  isEdge
 } from "/source/entity/main/field";
 import {
   parallel
@@ -123,10 +124,4 @@ export class Tile extends FloatingActor {
     return this.get(StoriesComponent)!;
   }
 
-}
-
-
-function isEdge(tileX: number, tileY: number): boolean {
-  const {tileWidth, tileHeight} = FIELD_PROPS;
-  return tileX % tileWidth === 0 || tileX % tileWidth === tileWidth - 1 || tileY % tileHeight === 0 || tileY % tileHeight === tileHeight - 1;
 }

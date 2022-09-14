@@ -17,7 +17,8 @@ import {
 import {
   FIELD_PROPS,
   Field,
-  TILE_DIMENSTION
+  TILE_DIMENSTION,
+  isEdge
 } from "/source/entity/main/field";
 import {
   Direction,
@@ -69,10 +70,12 @@ export class Player extends FloatingActor {
       const direction = this.determineDirection();
       if (direction !== null) {
         const [diffTileX, diffTileY] = calcDirectionDiff(direction);
-        this.stories.addStory(() => this.storyMove(direction));
-        this.field.moveTiles(this.tileX, this.tileY, direction);
-        this.tileX += diffTileX;
-        this.tileY += diffTileY;
+        if (!isEdge(this.tileX + diffTileX, this.tileY + diffTileY)) {
+          this.stories.addStory(() => this.storyMove(direction));
+          this.field.moveTiles(this.tileX, this.tileY, direction);
+          this.tileX += diffTileX;
+          this.tileY += diffTileY;
+        }
       }
     }
   }
