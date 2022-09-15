@@ -166,7 +166,7 @@ export class Field extends FloatingActor {
         currentName += convertIndexToChar(tile.index);
         currentTilePoss.push([tileX, tileY]);
         if (currentName.length >= 3 && searchString(DATA.names, currentName)) {
-          results.push([currentName, currentTilePoss]);
+          results.push([currentName, [...currentTilePoss]]);
         }
       } else {
         break;
