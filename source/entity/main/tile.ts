@@ -12,6 +12,9 @@ import {
   SPRITE_SHEETS
 } from "/source/core/asset";
 import {
+  DURATIONS
+} from "/source/core/constant";
+import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
@@ -95,8 +98,8 @@ export class Tile extends FloatingActor {
 
   private *storyAppear(): StoryGenerator {
     yield* parallel(
-      this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
-      this.stories.storyFadeIn(100)
+      this.stories.storyMoveTo(this.pos.add(vec(0, 4)), DURATIONS.appear),
+      this.stories.storyFadeIn(DURATIONS.appear)
     );
     this.state = "normal";
   }
@@ -104,8 +107,8 @@ export class Tile extends FloatingActor {
   private *storyDisappear(): StoryGenerator {
     this.state = "disappearing";
     yield* parallel(
-      this.stories.storyMoveTo(this.pos.add(vec(0, -4)), 100),
-      this.stories.storyFadeOut(100)
+      this.stories.storyMoveTo(this.pos.add(vec(0, -4)), DURATIONS.appear),
+      this.stories.storyFadeOut(DURATIONS.appear)
     );
     this.unparent();
     this.kill();
@@ -116,7 +119,7 @@ export class Tile extends FloatingActor {
     const diffX = diffTileX * TILE_DIMENSTION.width;
     const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), 140);
+    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), DURATIONS.move);
     this.moving = false;
     yield* this.storyDie();
   }
@@ -124,10 +127,10 @@ export class Tile extends FloatingActor {
   private *storyDie(): StoryGenerator {
     if (isEdge(this.tileX, this.tileY)) {
       this.state = "dying";
-      this.field.addTile();
+      this.field.addTiles();
       yield* parallel(
-        this.stories.storyMoveTo(this.pos.add(vec(0, 4)), 100),
-        this.stories.storyFadeOut(100)
+        this.stories.storyMoveTo(this.pos.add(vec(0, 4)), DURATIONS.appear),
+        this.stories.storyFadeOut(DURATIONS.appear)
       );
       this.unparent();
       this.kill();

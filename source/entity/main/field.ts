@@ -5,9 +5,11 @@ import {
   Engine
 } from "excalibur";
 import {
-  StoriesComponent,
-  StoryGenerator
+  StoriesComponent
 } from "/source/component";
+import {
+  DURATIONS
+} from "/source/core/constant";
 import DATA from "/source/data/data.json";
 import {
   FloatingActor
@@ -58,9 +60,7 @@ export class Field extends FloatingActor {
 
   public override onInitialize(engine: Engine): void {
     this.addPlayer();
-    for (let i = 0 ; i < 30 ; i ++) {
-      this.addTile();
-    }
+    this.addTiles(30);
   }
 
   private initializeComponents(): void {
@@ -68,17 +68,23 @@ export class Field extends FloatingActor {
     this.addComponent(actionComponent);
   }
 
-  public addTile(): void {
-    const [tileX, tileY] = this.getRandomEmptyTilePos();
-    const index = tileX + tileY * FIELD_PROPS.tileWidth;
-    if (this.tiles[index] === undefined) {
-      const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 38)});
-      tile.field = this;
-      this.tiles[index] = tile;
-      this.addChild(tile);
-    } else {
-      throw new Error(`tile already exists at (${tileX}, ${tileY})`);
+  public addTiles(count?: number): void {
+    count ??= 1;
+    for (let i = 0 ; i < count ; i ++) {
+      const [tileX, tileY] = this.getRandomEmptyTilePos();
+      const index = tileX + tileY * FIELD_PROPS.tileWidth;
+      if (this.tiles[index] === undefined) {
+        const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 38)});
+        tile.field = this;
+        this.tiles[index] = tile;
+        this.addChild(tile);
+      } else {
+        throw new Error(`tile already exists at (${tileX}, ${tileY})`);
+      }
     }
+    this.stories.runAfterDelay(() => {
+      this.disappearMatchedTiles();
+    }, DURATIONS.appear);
   }
 
   private addPlayer(): void {
@@ -112,24 +118,26 @@ export class Field extends FloatingActor {
     for (const {tileX, tileY, tile} of updatedTiles) {
       this.setTile(tileX, tileY, tile);
     }
-    const story = function *(this: Field): StoryGenerator {
-      yield* this.stories.storyWait(140);
+    this.stories.runAfterDelay(() => {
       this.disappearMatchedTiles();
-    };
-    this.stories.addStory(story.bind(this));
+    }, DURATIONS.move);
   }
 
   private disappearMatchedTiles(): void {
     const results = this.searchWords();
+    let disappearCount = 0;
     for (const [name, tilePoss] of results) {
       for (const [tileX, tileY] of tilePoss) {
         const tile = this.getTile(tileX, tileY);
         if (tile !== undefined) {
           this.setTile(tileX, tileY, undefined);
-          this.addTile();
+          disappearCount ++;
           tile.disappear();
         }
       }
+    }
+    if (disappearCount > 0) {
+      this.addTiles(disappearCount);
     }
   }
 
@@ -153,7 +161,7 @@ export class Field extends FloatingActor {
     const currentTilePoss = [] as TilePoss;
     while (true) {
       const tile = this.getTile(tileX, tileY);
-      if (tile !== undefined && tile.state === "normal") {
+      if (tile !== undefined) {
         currentName += convertIndexToChar(tile.index);
         currentTilePoss.push([tileX, tileY]);
         if (currentName.length >= 3 && (true || searchString(DATA.names, currentName))) {

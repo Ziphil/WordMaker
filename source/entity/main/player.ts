@@ -12,6 +12,9 @@ import {
   StoryGenerator
 } from "/source/component";
 import {
+  DURATIONS
+} from "/source/core/constant";
+import {
   FloatingActor
 } from "/source/entity/floating-actor";
 import {
@@ -89,7 +92,7 @@ export class Player extends FloatingActor {
     const diffX = diffTileX * TILE_DIMENSTION.width;
     const diffY = diffTileY * TILE_DIMENSTION.height;
     this.moving = true;
-    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), 140);
+    yield* this.stories.storyMoveTo(this.pos.add(vec(diffX, diffY)), DURATIONS.move);
     this.moving = false;
   }
 

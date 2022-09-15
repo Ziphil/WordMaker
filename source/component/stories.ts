@@ -36,6 +36,14 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
     this.generators.push(generator);
   }
 
+  public runAfterDelay(callback: () => unknown, duration: number): void {
+    const story = function *(this: StoriesComponent): StoryGenerator {
+      yield* this.storyWait(duration);
+      callback();
+    };
+    this.addStory(story.bind(this));
+  }
+
   public *storyWait(duration: number): StoryGenerator {
     let timer = 0;
     while (true) {
