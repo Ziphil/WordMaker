@@ -25,6 +25,7 @@ import {
   calcDirectionDiff
 } from "/source/util/misc";
 import {
+  convertCharToIndex,
   convertIndexToChar,
   searchString
 } from "/source/util/word";
@@ -74,7 +75,7 @@ export class Field extends FloatingActor {
       const [tileX, tileY] = this.getRandomEmptyTilePos();
       const index = tileX + tileY * FIELD_PROPS.tileWidth;
       if (this.tiles[index] === undefined) {
-        const tile = new Tile({tileX, tileY, index: Math.floor(Math.random() * 38)});
+        const tile = new Tile({tileX, tileY, index: this.getRandomIndex()});
         tile.field = this;
         this.tiles[index] = tile;
         this.addChild(tile);
@@ -174,6 +175,18 @@ export class Field extends FloatingActor {
       tileY += diffTileY;
     }
     return results;
+  }
+
+  private getRandomIndex(): number {
+    const random = Math.random();
+    let accumRate = 0;
+    for (const [char, rate] of Object.entries(DATA.rates)) {
+      accumRate += rate;
+      if (random < accumRate) {
+        return convertCharToIndex(char);
+      }
+    }
+    return 0;
   }
 
   private getRandomEmptyTilePos(): [number, number] {
