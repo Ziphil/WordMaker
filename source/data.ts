@@ -9,6 +9,9 @@ import {
 import {
   SingleLoader
 } from "soxsot/dist/io";
+import {
+  isConsonant
+} from "../source/util/word";
 
 
 const API_URL = "https://dic.ziphil.com/api/dictionary/download?kind=single";
@@ -45,8 +48,9 @@ function generateRates(dictionary: Dictionary): Record<string, number> {
     if (name.length >= 3 && !name.includes("+") && !name.includes("'")) {
       const chars = name.split("");
       for (const char of chars) {
-        rateMap.set(char, (rateMap.get(char) ?? 0) + 1);
-        total ++;
+        const weight = (isConsonant(char)) ? 1.75 : 1;
+        rateMap.set(char, (rateMap.get(char) ?? 0) + weight);
+        total += weight;
       }
     }
   }

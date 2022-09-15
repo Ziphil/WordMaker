@@ -2,6 +2,7 @@
 
 
 const CHARS = ["s", "z", "t", "d", "k", "g", "f", "v", "p", "b", "c", "q", "x", "j", "l", "r", "n", "m", "y", "h", "a", "á", "à", "â", "e", "é", "è", "ê", "i", "í", "ì", "î", "o", "ò", "ô", "u", "ù", "û"];
+const CONSONANTS = ["s", "z", "t", "d", "k", "g", "f", "v", "p", "b", "c", "q", "x", "j", "l", "r", "n", "m", "y", "h"];
 const INVERT_CHARS = Object.fromEntries(CHARS.map((char, index) => [char, index]));
 
 export function convertIndexToChar(index: number): string {
@@ -28,6 +29,14 @@ export function convertIndicesToString(indices: Array<number>): string {
 export function convertStringToIndices(string: string): Array<number> {
   const indices = string.split("").map(convertCharToIndex);
   return indices;
+}
+
+export function isConsonant(char: string): boolean {
+  return CONSONANTS.includes(char);
+}
+
+export function isVowel(char: string): boolean {
+  return !isConsonant(char);
 }
 
 export function searchString(strings: Array<string>, string: string): boolean {
