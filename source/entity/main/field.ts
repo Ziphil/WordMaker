@@ -19,10 +19,11 @@ import {
   Tile
 } from "/source/entity/main/tile";
 import {
+  Direction,
   calcDirectionDiff
 } from "/source/util/misc";
 import {
-  convertIndexToKey,
+  convertIndexToChar,
   searchString
 } from "/source/util/word";
 
@@ -37,7 +38,7 @@ export const FIELD_PROPS = {
 };
 
 export type TilePoss = Array<[number, number]>;
-export type SearchResults = Array<[key: string, tilePoss: Array<[number, number]>]>;
+export type SearchResults = Array<[name: string, tilePoss: Array<[number, number]>]>;
 
 
 export class Field extends FloatingActor {
@@ -87,7 +88,7 @@ export class Field extends FloatingActor {
     this.addChild(player);
   }
 
-  public moveTiles(tileX: number, tileY: number, direction: "right" | "left" | "down" | "up"): void {
+  public moveTiles(tileX: number, tileY: number, direction: Direction): void {
     const [diffTileX, diffTileY] = calcDirectionDiff(direction);
     const updatedTiles = [] ;
     updatedTiles.push({tileX: tileX + diffTileX, tileY: tileY + diffTileY, tile: undefined});
@@ -120,7 +121,7 @@ export class Field extends FloatingActor {
 
   private disappearMatchedTiles(): void {
     const results = this.searchWords();
-    for (const [key, tilePoss] of results) {
+    for (const [name, tilePoss] of results) {
       for (const [tileX, tileY] of tilePoss) {
         const tile = this.getTile(tileX, tileY);
         if (tile !== undefined) {
@@ -147,16 +148,16 @@ export class Field extends FloatingActor {
 
   private searchWordsAt(tileX: number, tileY: number, direction: "right" | "down"): SearchResults {
     const [diffTileX, diffTileY] = calcDirectionDiff(direction);
-    let currentKey = "";
+    let currentName = "";
     const results = [] as SearchResults;
     const currentTilePoss = [] as TilePoss;
     while (true) {
       const tile = this.getTile(tileX, tileY);
       if (tile !== undefined && tile.state === "normal") {
-        currentKey += convertIndexToKey(tile.index);
+        currentName += convertIndexToChar(tile.index);
         currentTilePoss.push([tileX, tileY]);
-        if (currentKey.length >= 3 && (true || searchString(DATA.keys, currentKey))) {
-          results.push([currentKey, currentTilePoss]);
+        if (currentName.length >= 3 && (true || searchString(DATA.names, currentName))) {
+          results.push([currentName, currentTilePoss]);
         }
       } else {
         break;

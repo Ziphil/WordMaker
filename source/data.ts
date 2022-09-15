@@ -5,9 +5,6 @@ import fs from "fs/promises";
 import {
   SingleLoader
 } from "soxsot/dist/io";
-import {
-  convertStringToKey
-} from "../source/util/word";
 
 
 async function fetchDictionary(): Promise<void> {
@@ -20,16 +17,15 @@ async function fetchDictionary(): Promise<void> {
 async function saveData(): Promise<void> {
   const loader = new SingleLoader("source/data/dictionary.xdc");
   const dictionary = await loader.asPromise();
-  const keys = [];
+  const names = [];
   for (const word of dictionary.words) {
     const name = word.name;
     if (name.length >= 3 && !name.includes("+") && !name.includes("'")) {
-      const key = convertStringToKey(name);
-      keys.push(key);
+      names.push(name);
     }
   }
-  keys.sort();
-  const json = {keys};
+  names.sort();
+  const json = {names};
   const jsonString = JSON.stringify(json, undefined, 2);
   await fs.writeFile("source/data/data.json", jsonString);
 }

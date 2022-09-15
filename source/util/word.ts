@@ -20,16 +20,6 @@ export function convertCharToIndex(char: string): number {
   return index;
 }
 
-export function convertIndexToKey(index: number): string {
-  const key = String.fromCodePoint(index + 0x30);
-  return key;
-}
-
-export function convertCharToKey(char: string): string {
-  const key = convertIndexToKey(convertCharToIndex(char));
-  return key;
-}
-
 export function convertIndicesToString(indices: Array<number>): string {
   const string = indices.map(convertIndexToChar).join("");
   return string;
@@ -40,19 +30,14 @@ export function convertStringToIndices(string: string): Array<number> {
   return indices;
 }
 
-export function convertStringToKey(string: string): string {
-  const key = string.split("").map(convertCharToKey).join("");
-  return key;
-}
-
-export function searchString(keys: Array<string>, key: string): boolean {
+export function searchString(strings: Array<string>, string: string): boolean {
   let start = 0;
-  let end = keys.length - 1;
+  let end = strings.length - 1;
   while (start <= end) {
     const middle = Math.floor((start + end) / 2);
-    if (keys[middle] < key) {
+    if (strings[middle] < string) {
       start = middle + 1;
-    } else if (keys[middle] > key) {
+    } else if (strings[middle] > string) {
       end = middle - 1;
     } else {
       return true;
