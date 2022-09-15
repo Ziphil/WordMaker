@@ -57,7 +57,7 @@ export class Tile extends FloatingActor {
     this.index = configs.index;
     this.state = "appearing";
     this.moving = false;
-    this.graphics.use(SPRITE_SHEETS.block.sprites[configs.index]);
+    this.graphics.use(SPRITE_SHEETS.block.sprites[configs.index].clone());
     this.initializeComponents();
   }
 
@@ -108,7 +108,8 @@ export class Tile extends FloatingActor {
     this.state = "disappearing";
     yield* parallel(
       this.stories.storyMoveTo(this.pos.add(vec(0, -4)), DURATIONS.appear),
-      this.stories.storyFadeOut(DURATIONS.appear)
+      this.stories.storyFadeOut(DURATIONS.appear),
+      this.stories.storyBlink(DURATIONS.appear)
     );
     this.unparent();
     this.kill();

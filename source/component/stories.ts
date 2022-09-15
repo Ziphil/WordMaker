@@ -1,11 +1,13 @@
 //
 
 import {
-  Actor,
+  Color,
   Component,
   Entity,
+  GraphicsComponent,
   System,
   SystemType,
+  TransformComponent,
   Vector
 } from "excalibur";
 import {
@@ -55,57 +57,77 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
   }
 
   public *storyMoveTo(destPos: Vector, duration: number): StoryGenerator {
-    const entity = this.owner;
-    if (entity !== null && entity instanceof Actor) {
+    const transform = this.owner?.get(TransformComponent) ?? null;
+    if (transform !== null) {
       let timer = 0;
-      const initialPos = entity.pos.clone();
+      const initialPos = transform.pos.clone();
       while (true) {
         timer += yield;
         const ratio = clamp(timer / duration, 0, 1);
         const pos = lerp(initialPos, destPos, ratio);
-        entity.pos = pos;
+        transform.pos = pos;
         if (timer >= duration) {
           break;
         }
       }
     } else {
-      throw new Error("entity is not an actor");
+      throw new Error("entity has no TransformComponent");
     }
   }
 
   public *storyFadeIn(duration: number): StoryGenerator {
-    const entity = this.owner;
-    if (entity !== null && entity instanceof Actor) {
+    const graphics = this.owner?.get(GraphicsComponent) ?? null;
+    if (graphics !== null) {
       let timer = 0;
       while (true) {
         timer += yield;
         const ratio = clamp(timer / duration, 0, 1);
         const opacity = lerp(0, 1, ratio);
-        entity.graphics.opacity = opacity;
+        graphics.opacity = opacity;
         if (timer >= duration) {
           break;
         }
       }
     } else {
-      throw new Error("entity is not an actor");
+      throw new Error("entity has no GraohicsComponent");
     }
   }
 
   public *storyFadeOut(duration: number): StoryGenerator {
-    const entity = this.owner;
-    if (entity !== null && entity instanceof Actor) {
+    const graphics = this.owner?.get(GraphicsComponent) ?? null;
+    if (graphics !== null) {
       let timer = 0;
       while (true) {
         timer += yield;
         const ratio = clamp(timer / duration, 0, 1);
         const opacity = lerp(1, 0, ratio);
-        entity.graphics.opacity = opacity;
+        graphics.opacity = opacity;
         if (timer >= duration) {
           break;
         }
       }
     } else {
-      throw new Error("entity is not an actor");
+      throw new Error("entity has no GraohicsComponent");
+    }
+  }
+
+  public *storyBlink(duration: number): StoryGenerator {
+    const graphics = this.owner?.get(GraphicsComponent) ?? null;
+    if (graphics !== null) {
+      let timer = 0;
+      while (true) {
+        timer += yield;
+        const ratio = clamp(timer / duration, 0, 1);
+        const tint = Color.fromHSL(0, 0, 1, lerp(1, 0, ratio));
+        for (const {graphic} of graphics.current) {
+          graphic.tint = tint;
+        }
+        if (timer >= duration) {
+          break;
+        }
+      }
+    } else {
+      throw new Error("entity has no GraohicsComponent");
     }
   }
 
