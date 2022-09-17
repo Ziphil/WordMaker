@@ -72,23 +72,18 @@ export class Field extends FloatingActor {
 
   private initializeGraphics(): void {
     const members = [];
-    members.push({graphic: SPRITE_SHEETS.field.sprites[0], pos: vec(20, 20)});
-    for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
-      members.push({graphic: SPRITE_SHEETS.field.sprites[1], pos: vec(42 + 21 * x, 20)});
-    }
-    members.push({graphic: SPRITE_SHEETS.field.sprites[2], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 20)});
-    for (let y = 0 ; y < FIELD_PROPS.tileHeight - 4; y ++) {
-      members.push({graphic: SPRITE_SHEETS.field.sprites[3], pos: vec(20, 42 + 21 * y)});
-      for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
-        members.push({graphic: SPRITE_SHEETS.field.sprites[4], pos: vec(42 + 21 * x, 42 + 21 * y)});
+    const sprites = SPRITE_SHEETS.field.sprites;
+    const {width, height} = TILE_DIMENSTION;
+    const {tileWidth, tileHeight} = FIELD_PROPS;
+    for (let tileY = 1 ; tileY < tileHeight - 1 ; tileY ++) {
+      const y = 20 + ((tileY === 1) ? 0 : (height + 1) + height * (tileY - 2));
+      const baseSpriteIndex = (tileY === 1) ? 0 : (tileY === tileHeight - 2) ? 6 : 3;
+      for (let tileX = 1 ; tileX < tileWidth - 1 ; tileX ++) {
+        const x = 20 + ((tileX === 1) ? 0 : (width + 1) + width * (tileX - 2));
+        const spriteIndex = baseSpriteIndex + ((tileX === 1) ? 0 : (tileX === tileWidth - 2) ? 2 : 1);
+        members.push({graphic: sprites[spriteIndex], pos: vec(x, y)});
       }
-      members.push({graphic: SPRITE_SHEETS.field.sprites[5], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 42 + 21 * y)});
     }
-    members.push({graphic: SPRITE_SHEETS.field.sprites[6], pos: vec(20, 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
-    for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
-      members.push({graphic: SPRITE_SHEETS.field.sprites[7], pos: vec(42 + 21 * x, 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
-    }
-    members.push({graphic: SPRITE_SHEETS.field.sprites[8], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
     const graphics = new GraphicsGroup({members});
     this.graphics.use(graphics);
   }
