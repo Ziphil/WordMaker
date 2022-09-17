@@ -13,6 +13,9 @@ import {
 import {
   Field
 } from "/source/entity/main/field";
+import {
+  Status
+} from "/source/entity/main/status";
 
 
 export class MainScene extends Scene {
@@ -41,6 +44,8 @@ export class MainScene extends Scene {
 
   private addEntities(): void {
     const field = new Field();
+    const status = new Status();
+    field.status = status;
     this.add(field);
   }
 

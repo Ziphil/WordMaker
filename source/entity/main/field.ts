@@ -22,6 +22,9 @@ import {
   Player
 } from "/source/entity/main/player";
 import {
+  Status
+} from "/source/entity/main/status";
+import {
   Tile
 } from "/source/entity/main/tile";
 import {
@@ -52,10 +55,11 @@ export class Field extends FloatingActor {
 
   private readonly tiles: Array<Tile | undefined>;
   private player!: Player;
+  public status!: Status;
 
   public constructor() {
     super({
-      pos: vec(16, 16),
+      pos: vec(6, 6),
       width: FIELD_PROPS.tileWidth * TILE_DIMENSTION.width,
       height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height,
       z: 0
@@ -108,7 +112,7 @@ export class Field extends FloatingActor {
       }
     }
     this.stories.runAfterDelay(() => {
-      this.disappearMatchedTiles();
+      this.clearMatchedTiles();
     }, DURATIONS.appear);
   }
 
@@ -144,25 +148,26 @@ export class Field extends FloatingActor {
       this.setTile(tileX, tileY, tile);
     }
     this.stories.runAfterDelay(() => {
-      this.disappearMatchedTiles();
+      this.clearMatchedTiles();
     }, DURATIONS.move);
   }
 
-  private disappearMatchedTiles(): void {
+  private clearMatchedTiles(): void {
     const results = this.searchWords();
-    let disappearCount = 0;
+    let clearCount = 0;
     for (const [name, tilePoss] of results) {
       for (const [tileX, tileY] of tilePoss) {
         const tile = this.getTile(tileX, tileY);
         if (tile !== undefined) {
           this.setTile(tileX, tileY, undefined);
-          disappearCount ++;
-          tile.disappear();
+          clearCount ++;
+          tile.clear();
         }
       }
+      this.status.clear(name);
     }
-    if (disappearCount > 0) {
-      this.addTiles(disappearCount);
+    if (clearCount > 0) {
+      this.addTiles(clearCount);
     }
   }
 

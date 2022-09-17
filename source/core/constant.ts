@@ -2,8 +2,8 @@
 
 
 export const SCREEN_DIMENSION = {
-  width: 680,
-  height: 360
+  width: 328,
+  height: 328
 };
 
 export const DURATIONS = {

@@ -37,7 +37,7 @@ export type TileConfigs = {
   tileY: number,
   index: number
 };
-export type TileState = "appearing" | "normal" | "disappearing" | "dying";
+export type TileState = "appear" | "normal" | "clear" | "die";
 
 
 export class Tile extends FloatingActor {
@@ -56,7 +56,7 @@ export class Tile extends FloatingActor {
     this.tileX = tileX;
     this.tileY = tileY;
     this.index = configs.index;
-    this.state = "appearing";
+    this.state = "appear";
     this.moving = false;
     this.graphics.use(SPRITE_SHEETS.block.sprites[configs.index].clone());
     this.initializeComponents();
@@ -80,7 +80,7 @@ export class Tile extends FloatingActor {
     this.stories.addStory(() => this.storyAppear());
   }
 
-  public disappear(): void {
+  public clear(): void {
     this.stories.addStory(() => this.storyDisappear());
   }
 
@@ -97,9 +97,9 @@ export class Tile extends FloatingActor {
     const getLayerDepth = function (this: Tile): number {
       const state = this.state;
       const modificationDepth = this.pos.y / (TILE_DIMENSTION.height * FIELD_PROPS.tileHeight);
-      if (state === "appearing" || state === "disappearing") {
+      if (state === "appear" || state === "clear") {
         return 1500 - modificationDepth;
-      } else if (state === "dying") {
+      } else if (state === "die") {
         if (this.tileY === 0) {
           return -500 - modificationDepth;
         } else {
@@ -121,7 +121,7 @@ export class Tile extends FloatingActor {
   }
 
   private *storyDisappear(): StoryGenerator {
-    this.state = "disappearing";
+    this.state = "clear";
     yield* parallel(
       this.stories.storyMoveTo(this.pos.add(vec(0, -4)), DURATIONS.appear),
       this.stories.storyFadeOut(DURATIONS.appear),
@@ -142,7 +142,7 @@ export class Tile extends FloatingActor {
 
   private *storyDie(): StoryGenerator {
     if (isEdge(this.tileX, this.tileY)) {
-      this.state = "dying";
+      this.state = "die";
       this.field.addTiles();
       yield* parallel(
         this.stories.storyMoveTo(this.pos.add(vec(0, 4)), DURATIONS.appear),

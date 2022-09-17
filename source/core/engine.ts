@@ -34,7 +34,7 @@ export class CustomEngine extends Engine {
       viewport: {width: SCREEN_DIMENSION.width * 2, height: SCREEN_DIMENSION.height * 2},
       displayMode: DisplayMode["Fixed"],
       canvasElementId: "screen",
-      backgroundColor: Color.fromHSL(0, 0, 0.3),
+      backgroundColor: Color.fromHSL(0, 0, 0.5),
       antialiasing: false,
       snapToPixel: true,
       suppressHiDPIScaling: true
