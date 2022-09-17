@@ -32,11 +32,12 @@ import {
 } from "/source/util/misc";
 
 
-export type BlockConfigs = {
+export type TileConfigs = {
   tileX: number,
   tileY: number,
   index: number
 };
+export type TileState = "appearing" | "normal" | "disappearing" | "dying";
 
 
 export class Tile extends FloatingActor {
@@ -44,11 +45,11 @@ export class Tile extends FloatingActor {
   public tileX: number;
   public tileY: number;
   public index: number;
-  public state: "appearing" | "normal" | "disappearing" | "dying";
+  public state: TileState;
   public moving: boolean;
   public field!: Field;
 
-  public constructor({tileX, tileY, ...configs}: BlockConfigs) {
+  public constructor({tileX, tileY, ...configs}: TileConfigs) {
     super({
       pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height - 7)
     });
@@ -93,7 +94,22 @@ export class Tile extends FloatingActor {
   }
 
   private updateDepth(): void {
-    this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
+    const getLayerDepth = function (this: Tile): number {
+      const state = this.state;
+      const modificationDepth = this.pos.y / (TILE_DIMENSTION.height * FIELD_PROPS.tileHeight);
+      if (state === "appearing" || state === "disappearing") {
+        return 1500 - modificationDepth;
+      } else if (state === "dying") {
+        if (this.tileY === 0) {
+          return -500 - modificationDepth;
+        } else {
+          return 500 - modificationDepth;
+        }
+      } else {
+        return 1000;
+      }
+    };
+    this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth + getLayerDepth.call(this);
   }
 
   private *storyAppear(): StoryGenerator {

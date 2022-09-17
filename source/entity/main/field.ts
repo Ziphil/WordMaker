@@ -57,7 +57,8 @@ export class Field extends FloatingActor {
     super({
       pos: vec(16, 16),
       width: FIELD_PROPS.tileWidth * TILE_DIMENSTION.width,
-      height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height
+      height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height,
+      z: 0
     });
     this.tiles = Array.from({length: FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight});
     this.initializeComponents();
