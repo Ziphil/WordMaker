@@ -111,7 +111,6 @@ export class Tile extends FloatingActor {
       this.stories.storyFadeOut(DURATIONS.appear),
       this.stories.storyBlink(DURATIONS.appear)
     );
-    this.unparent();
     this.kill();
   }
 
@@ -133,7 +132,6 @@ export class Tile extends FloatingActor {
         this.stories.storyMoveTo(this.pos.add(vec(0, 4)), DURATIONS.appear),
         this.stories.storyFadeOut(DURATIONS.appear)
       );
-      this.unparent();
       this.kill();
     }
   }

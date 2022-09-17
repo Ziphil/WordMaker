@@ -42,6 +42,6 @@
   "dependencies": {
     "@excaliburjs/dev-tools": "^0.27.1",
     "axios": "^0.27.2",
-    "excalibur": "^0.27.0"
+    "excalibur": "^0.28.0-alpha.564"
   }
 }
