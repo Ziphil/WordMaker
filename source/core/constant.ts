@@ -8,5 +8,5 @@ export const SCREEN_DIMENSION = {
 
 export const DURATIONS = {
   move: 130,
-  appear: 100
+  appear: 200
 };

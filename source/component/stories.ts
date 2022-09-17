@@ -118,7 +118,7 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
       while (true) {
         timer += yield;
         const ratio = clamp(timer / duration, 0, 1);
-        const tint = Color.fromHSL(0, 0, 1, lerp(1, 0, ratio));
+        const tint = Color.fromHSL(0, 0, 1, lerp(0.5, 0, ratio));
         for (const {graphic} of graphics.current) {
           graphic.tint = tint;
         }
