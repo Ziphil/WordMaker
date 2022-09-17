@@ -1,12 +1,16 @@
 //
 
 import {
-  Color,
-  Engine
+  Engine,
+  GraphicsGroup,
+  vec
 } from "excalibur";
 import {
   StoriesComponent
 } from "/source/component";
+import {
+  SPRITE_SHEETS
+} from "/source/core/asset";
 import {
   DURATIONS
 } from "/source/core/constant";
@@ -51,9 +55,9 @@ export class Field extends FloatingActor {
 
   public constructor() {
     super({
+      pos: vec(16, 16),
       width: FIELD_PROPS.tileWidth * TILE_DIMENSTION.width,
-      height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height,
-      color: Color.fromHex("#00000022")
+      height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height
     });
     this.tiles = Array.from({length: FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight});
     this.initializeComponents();
@@ -62,6 +66,30 @@ export class Field extends FloatingActor {
   public override onInitialize(engine: Engine): void {
     this.addPlayer();
     this.addTiles(30);
+    this.initializeGraphics();
+  }
+
+  private initializeGraphics(): void {
+    const members = [];
+    members.push({graphic: SPRITE_SHEETS.field.sprites[0], pos: vec(20, 20)});
+    for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
+      members.push({graphic: SPRITE_SHEETS.field.sprites[1], pos: vec(42 + 21 * x, 20)});
+    }
+    members.push({graphic: SPRITE_SHEETS.field.sprites[2], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 20)});
+    for (let y = 0 ; y < FIELD_PROPS.tileHeight - 4; y ++) {
+      members.push({graphic: SPRITE_SHEETS.field.sprites[3], pos: vec(20, 42 + 21 * y)});
+      for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
+        members.push({graphic: SPRITE_SHEETS.field.sprites[4], pos: vec(42 + 21 * x, 42 + 21 * y)});
+      }
+      members.push({graphic: SPRITE_SHEETS.field.sprites[5], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 42 + 21 * y)});
+    }
+    members.push({graphic: SPRITE_SHEETS.field.sprites[6], pos: vec(20, 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
+    for (let x = 0 ; x < FIELD_PROPS.tileWidth - 4 ; x ++) {
+      members.push({graphic: SPRITE_SHEETS.field.sprites[7], pos: vec(42 + 21 * x, 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
+    }
+    members.push({graphic: SPRITE_SHEETS.field.sprites[8], pos: vec(42 + 21 * (FIELD_PROPS.tileWidth - 4), 42 + 21 * (FIELD_PROPS.tileHeight - 4))});
+    const graphics = new GraphicsGroup({members});
+    this.graphics.use(graphics);
   }
 
   private initializeComponents(): void {

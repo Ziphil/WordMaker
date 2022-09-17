@@ -50,7 +50,7 @@ export class Tile extends FloatingActor {
 
   public constructor({tileX, tileY, ...configs}: BlockConfigs) {
     super({
-      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height - 4)
+      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height - 7)
     });
     this.tileX = tileX;
     this.tileY = tileY;
