@@ -59,7 +59,7 @@ export class Field extends FloatingActor {
 
   public constructor() {
     super({
-      pos: vec(6, 46),
+      pos: vec(6, 42),
       width: FIELD_PROPS.tileWidth * TILE_DIMENSTION.width,
       height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height,
       z: 0
@@ -70,7 +70,7 @@ export class Field extends FloatingActor {
 
   public override onInitialize(engine: Engine): void {
     this.addPlayer();
-    this.addTiles(30);
+    this.addTiles(40);
     this.initializeGraphics();
   }
 

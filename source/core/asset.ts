@@ -52,6 +52,13 @@ export const SPRITE_SHEETS = {
       {x: 22, y: 43, width: 21, height: 23},
       {x: 43, y: 43, width: 21, height: 23}
     ]
+  }),
+  status: SpriteSheet.fromImageSourceWithSourceViews({
+    image: ASSETS.statusBackground,
+    sourceViews: [
+      {x: 0, y: 0, width: 274, height: 32},
+      {x: 3, y: 32, width: 268, height: 4}
+    ]
   })
 };
 

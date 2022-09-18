@@ -5,7 +5,7 @@ import {
   vec
 } from "excalibur";
 import {
-  ASSETS
+  SPRITE_SHEETS
 } from "/source/core/asset";
 import {
   FloatingActor
@@ -16,6 +16,9 @@ import {
 import {
   ScoreLabel
 } from "/source/entity/status/score-label";
+import {
+  TimeBar
+} from "/source/entity/status/time-bar";
 
 
 export class StatusPane extends FloatingActor {
@@ -26,7 +29,7 @@ export class StatusPane extends FloatingActor {
     super({
       pos: vec(26, 6)
     });
-    this.graphics.use(ASSETS.statusBackground.toSprite());
+    this.graphics.use(SPRITE_SHEETS.status.sprites[0]);
   }
 
   public override onInitialize(engine: Engine): void {
@@ -38,9 +41,12 @@ export class StatusPane extends FloatingActor {
 
   private addChildren(): void {
     const graphic = this.graphics.current[0].graphic;
-    const scoreLabel = new ScoreLabel({x: graphic.width / 2, y: 12});
+    const scoreLabel = new ScoreLabel({x: graphic.width / 2, y: 10});
+    const timeBar = new TimeBar({x: 3, y: 3});
     scoreLabel.status = this.status;
+    timeBar.status = this.status;
     this.addChild(scoreLabel);
+    this.addChild(timeBar);
   }
 
 }

@@ -3,7 +3,7 @@
 
 export const SCREEN_DIMENSION = {
   width: 328,
-  height: 368
+  height: 362
 };
 
 export const DURATIONS = {
