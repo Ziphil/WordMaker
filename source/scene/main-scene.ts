@@ -53,6 +53,7 @@ export class MainScene extends Scene {
     statusPane.status = status;
     this.add(field);
     this.add(statusPane);
+    this.add(status);
   }
 
   private clearEntities(): void {

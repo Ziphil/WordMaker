@@ -37,14 +37,14 @@ export class ScoreLabel extends FloatingActor {
   }
 
   private initializeGraphics(): void {
-    const string = this.status.score.toFixed(0);
+    const string = this.status.displayScore.toFixed(0);
     const text = new Text({text: string, font: SPRITE_FONTS.char});
     this.text = text;
     this.graphics.use(text);
   }
 
   private updateScore(): void {
-    const string = this.status.score.toFixed(0);
+    const string = this.status.displayScore.toFixed(0);
     this.text.text = string;
   }
 
