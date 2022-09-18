@@ -11,7 +11,7 @@ export const ASSETS = {
   char: new ImageSource("asset/image/char.png"),
   block: new ImageSource("asset/image/block.png"),
   field: new ImageSource("asset/image/field.png"),
-  statusBackground: new ImageSource("asset/image/status-background.png")
+  status: new ImageSource("asset/image/status.png")
 };
 
 export const SPRITE_SHEETS = {
@@ -54,7 +54,7 @@ export const SPRITE_SHEETS = {
     ]
   }),
   status: SpriteSheet.fromImageSourceWithSourceViews({
-    image: ASSETS.statusBackground,
+    image: ASSETS.status,
     sourceViews: [
       {x: 0, y: 0, width: 274, height: 32},
       {x: 3, y: 32, width: 268, height: 4}
