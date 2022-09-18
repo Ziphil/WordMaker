@@ -2,16 +2,34 @@
 
 import {
   ImageSource,
+  SpriteFont,
   SpriteSheet
 } from "excalibur";
 
 
 export const ASSETS = {
+  char: new ImageSource("asset/image/char.png"),
   block: new ImageSource("asset/image/block.png"),
-  field: new ImageSource("asset/image/field.png")
+  field: new ImageSource("asset/image/field.png"),
+  statusBackground: new ImageSource("asset/image/status-background.png")
 };
 
 export const SPRITE_SHEETS = {
+  char: SpriteSheet.fromImageSourceWithSourceViews({
+    image: ASSETS.char,
+    sourceViews: [
+      {x: 0, y: 0, width: 8, height: 17},
+      {x: 16, y: 0, width: 8, height: 17},
+      {x: 32, y: 0, width: 8, height: 17},
+      {x: 48, y: 0, width: 10, height: 17},
+      {x: 64, y: 0, width: 8, height: 17},
+      {x: 0, y: 17, width: 12, height: 17},
+      {x: 16, y: 17, width: 8, height: 17},
+      {x: 32, y: 17, width: 10, height: 17},
+      {x: 48, y: 17, width: 8, height: 17},
+      {x: 64, y: 17, width: 8, height: 17}
+    ]
+  }),
   block: SpriteSheet.fromImageSource({
     image: ASSETS.block,
     grid: {
@@ -38,4 +56,10 @@ export const SPRITE_SHEETS = {
 };
 
 export const SPRITE_FONTS = {
+  char: new SpriteFont({
+    spriteSheet: SPRITE_SHEETS.char,
+    alphabet: "0123456789",
+    spacing: 2,
+    caseInsensitive: true
+  })
 };

@@ -59,7 +59,7 @@ export class Field extends FloatingActor {
 
   public constructor() {
     super({
-      pos: vec(6, 6),
+      pos: vec(6, 46),
       width: FIELD_PROPS.tileWidth * TILE_DIMENSTION.width,
       height: FIELD_PROPS.tileHeight * TILE_DIMENSTION.height,
       z: 0

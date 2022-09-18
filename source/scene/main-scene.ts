@@ -16,6 +16,9 @@ import {
 import {
   Status
 } from "/source/entity/main/status";
+import {
+  StatusPane
+} from "/source/entity/status/status-pane";
 
 
 export class MainScene extends Scene {
@@ -44,9 +47,12 @@ export class MainScene extends Scene {
 
   private addEntities(): void {
     const field = new Field();
+    const statusPane = new StatusPane();
     const status = new Status();
     field.status = status;
+    statusPane.status = status;
     this.add(field);
+    this.add(statusPane);
   }
 
   private clearEntities(): void {
