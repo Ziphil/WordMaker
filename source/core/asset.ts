@@ -57,7 +57,8 @@ export const SPRITE_SHEETS = {
   ready: SpriteSheet.fromImageSourceWithSourceViews({
     image: ASSETS.ready,
     sourceViews: [
-      {x: 0, y: 0, width: 216, height: 44}
+      {x: 0, y: 0, width: 216, height: 45},
+      {x: 0, y: 45, width: 113, height: 45}
     ]
   }),
   status: SpriteSheet.fromImageSourceWithSourceViews({

@@ -30,6 +30,7 @@ import {
 import {
   Tile
 } from "/source/entity/main/tile";
+import {parallel} from "/source/util/generator";
 import {
   Direction,
   calcDirectionDiff
@@ -58,6 +59,7 @@ export class Field extends FloatingActorWithStories {
 
   private readonly tiles: Array<Tile | undefined>;
   private player!: Player;
+  private readyPane!: ReadyPane;
   public status!: Status;
 
   public constructor() {
@@ -71,13 +73,14 @@ export class Field extends FloatingActorWithStories {
   }
 
   public override onInitialize(engine: Engine): void {
-    this.addPlayer();
-    this.addTiles(40);
-    this.addReadyPane();
     this.initializeGraphics();
+    this.start();
   }
 
-  private *storyStart(): StoryGenerator {
+  private start(): void {
+    this.addPlayer();
+    this.addReadyPane();
+    this.stories.addStory(() => this.storyStart());
   }
 
   private initializeGraphics(): void {
@@ -96,11 +99,6 @@ export class Field extends FloatingActorWithStories {
     }
     const graphic = new GraphicsGroup({members});
     this.graphics.use(graphic);
-  }
-
-  private addReadyPane(): void {
-    const readyLabel = new ReadyPane({x: this.width / 2, y: this.height / 2});
-    this.addChild(readyLabel);
   }
 
   public addTiles(count?: number): void {
@@ -127,6 +125,12 @@ export class Field extends FloatingActorWithStories {
     player.field = this;
     this.player = player;
     this.addChild(player);
+  }
+
+  private addReadyPane(): void {
+    const readyPane = new ReadyPane({x: this.width / 2, y: this.height / 2});
+    this.readyPane = readyPane;
+    this.addChild(readyPane);
   }
 
   public moveTiles(tileX: number, tileY: number, direction: Direction): void {
@@ -210,6 +214,24 @@ export class Field extends FloatingActorWithStories {
       tileY += diffTileY;
     }
     return results;
+  }
+
+  private *storyStart(): StoryGenerator {
+    yield* parallel(
+      this.readyPane.storyAppear(),
+      this.storyAddTiles(40)
+    );
+    yield* this.stories.storyWait(300);
+    this.readyPane.changeLabelToGo();
+    yield* this.stories.storyWait(1500);
+    yield* this.readyPane.storyDisappear();
+  }
+
+  private *storyAddTiles(count: number): StoryGenerator {
+    for (let i = 0 ; i < count ; i ++) {
+      yield* this.stories.storyWait(20);
+      this.addTiles();
+    }
   }
 
   private getRandomIndex(): number {

@@ -41,7 +41,6 @@ export class ReadyPane extends FloatingActorWithStories {
 
   public override onInitialize(engine: Engine): void {
     this.addChildren();
-    this.appear();
   }
 
   private addChildren(): void {
@@ -53,14 +52,21 @@ export class ReadyPane extends FloatingActorWithStories {
     this.addChild(background);
   }
 
-  private appear(): void {
-    this.stories.addStory(() => this.storyAppear());
+  public changeLabelToGo(): void {
+    this.label.graphics.use("go");
   }
 
   public *storyAppear(): StoryGenerator {
     yield* parallel(
       this.label.storyAppear(),
       this.background.storyAppear()
+    );
+  }
+
+  public *storyDisappear(): StoryGenerator {
+    yield* parallel(
+      this.label.storyDisappear(),
+      this.background.storyDisappear()
     );
   }
 
@@ -89,7 +95,11 @@ export class ReadyLabel extends FloatingActorWithStories {
   }
 
   public *storyAppear(): StoryGenerator {
-    yield* this.stories.storyFadeIn(200);
+    yield* this.stories.storyFadeIn(300);
+  }
+
+  public *storyDisappear(): StoryGenerator {
+    yield* this.stories.storyFadeOut(100);
   }
 
 }
@@ -98,6 +108,7 @@ export class ReadyLabel extends FloatingActorWithStories {
 export class ReadyLabelBackground extends FloatingActorWithStories {
 
   private rectangleHeight: number;
+  private rectangleOpacity: number;
 
   public constructor() {
     super({
@@ -108,6 +119,7 @@ export class ReadyLabelBackground extends FloatingActorWithStories {
       z: 2000
     });
     this.rectangleHeight = 0;
+    this.rectangleOpacity = 1;
   }
 
   public override onInitialize(engine: Engine): void {
@@ -116,16 +128,26 @@ export class ReadyLabelBackground extends FloatingActorWithStories {
 
   private initializeGraphics(): void {
     const onPreDraw = function (this: ReadyLabelBackground, context: ExcaliburGraphicsContext): void {
-      context.drawRectangle(vec(-this.width / 2, -this.rectangleHeight / 2), this.width, this.rectangleHeight, Color.fromHSL(0, 0, 1, 0.5));
+      context.save();
+      context.opacity = this.rectangleOpacity;
+      context.drawRectangle(vec(-this.width / 2, -this.rectangleHeight / 2), this.width, this.rectangleHeight, Color.fromHSL(0, 0, 0.95, 0.7));
+      context.restore();
     };
     this.graphics.onPreDraw = onPreDraw.bind(this);
   }
 
   public *storyAppear(): StoryGenerator {
     yield* this.stories.storyWithRatio((ratio) => {
-      const rectangleHeight = lerp(0, 60, ratio);
+      const rectangleHeight = lerp(0, 70, ratio);
       this.rectangleHeight = rectangleHeight;
-    }, 200);
+    }, 300);
+  }
+
+  public *storyDisappear(): StoryGenerator {
+    yield* this.stories.storyWithRatio((ratio) => {
+      const rectangleOpacity = lerp(1, 0, ratio);
+      this.rectangleOpacity = rectangleOpacity;
+    }, 100);
   }
 
 }
