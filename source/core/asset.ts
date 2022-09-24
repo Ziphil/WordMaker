@@ -11,6 +11,7 @@ export const ASSETS = {
   char: new ImageSource("asset/image/char.png"),
   block: new ImageSource("asset/image/block.png"),
   field: new ImageSource("asset/image/field.png"),
+  ready: new ImageSource("asset/image/ready.png"),
   status: new ImageSource("asset/image/status.png")
 };
 
@@ -51,6 +52,12 @@ export const SPRITE_SHEETS = {
       {x: 0, y: 43, width: 22, height: 23},
       {x: 22, y: 43, width: 21, height: 23},
       {x: 43, y: 43, width: 21, height: 23}
+    ]
+  }),
+  ready: SpriteSheet.fromImageSourceWithSourceViews({
+    image: ASSETS.ready,
+    sourceViews: [
+      {x: 0, y: 0, width: 216, height: 44}
     ]
   }),
   status: SpriteSheet.fromImageSourceWithSourceViews({

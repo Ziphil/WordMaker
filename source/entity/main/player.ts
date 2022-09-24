@@ -8,14 +8,13 @@ import {
 } from "excalibur";
 import {
   InputComponent,
-  StoriesComponent,
   StoryGenerator
 } from "/source/component";
 import {
   DURATIONS
 } from "/source/core/constant";
 import {
-  FloatingActor
+  FloatingActorWithStories
 } from "/source/entity/floating-actor";
 import {
   FIELD_PROPS,
@@ -23,7 +22,9 @@ import {
   TILE_DIMENSTION,
   isEdge
 } from "/source/entity/main/field";
-import {parallel} from "/source/util/generator";
+import {
+  parallel
+} from "/source/util/generator";
 import {
   Direction,
   calcDirectionDiff
@@ -36,7 +37,7 @@ export type PlayerConfigs = {
 };
 
 
-export class Player extends FloatingActor {
+export class Player extends FloatingActorWithStories {
 
   public tileX: number;
   public tileY: number;
@@ -65,9 +66,7 @@ export class Player extends FloatingActor {
 
   private initializeComponents(): void {
     const inputComponrnt = new InputComponent();
-    const storiesComponent = new StoriesComponent();
     this.addComponent(inputComponrnt);
-    this.addComponent(storiesComponent);
   }
 
   private appear(): void {
@@ -127,10 +126,6 @@ export class Player extends FloatingActor {
 
   private get input(): InputComponent {
     return this.get(InputComponent)!;
-  }
-
-  private get stories(): StoriesComponent {
-    return this.get(StoriesComponent)!;
   }
 
 }

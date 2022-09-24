@@ -6,7 +6,7 @@ import {
   vec
 } from "excalibur";
 import {
-  StoriesComponent
+  StoryGenerator
 } from "/source/component";
 import {
   SPRITE_SHEETS
@@ -16,11 +16,14 @@ import {
 } from "/source/core/constant";
 import DATA from "/source/data/data.json";
 import {
-  FloatingActor
+  FloatingActorWithStories
 } from "/source/entity/floating-actor";
 import {
   Player
 } from "/source/entity/main/player";
+import {
+  ReadyPane
+} from "/source/entity/main/ready-pane";
 import {
   Status
 } from "/source/entity/main/status";
@@ -51,7 +54,7 @@ export type TilePoss = Array<[number, number]>;
 export type SearchResults = Array<[name: string, tilePoss: Array<[number, number]>]>;
 
 
-export class Field extends FloatingActor {
+export class Field extends FloatingActorWithStories {
 
   private readonly tiles: Array<Tile | undefined>;
   private player!: Player;
@@ -65,13 +68,16 @@ export class Field extends FloatingActor {
       z: 0
     });
     this.tiles = Array.from({length: FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight});
-    this.initializeComponents();
   }
 
   public override onInitialize(engine: Engine): void {
     this.addPlayer();
     this.addTiles(40);
+    this.addReadyPane();
     this.initializeGraphics();
+  }
+
+  private *storyStart(): StoryGenerator {
   }
 
   private initializeGraphics(): void {
@@ -88,13 +94,13 @@ export class Field extends FloatingActor {
         members.push({graphic: sprites[spriteIndex], pos: vec(x, y)});
       }
     }
-    const graphics = new GraphicsGroup({members});
-    this.graphics.use(graphics);
+    const graphic = new GraphicsGroup({members});
+    this.graphics.use(graphic);
   }
 
-  private initializeComponents(): void {
-    const actionComponent = new StoriesComponent();
-    this.addComponent(actionComponent);
+  private addReadyPane(): void {
+    const readyLabel = new ReadyPane({x: this.width / 2, y: this.height / 2});
+    this.addChild(readyLabel);
   }
 
   public addTiles(count?: number): void {
@@ -243,10 +249,6 @@ export class Field extends FloatingActor {
   private setTile(tileX: number, tileY: number, tile: Tile | undefined): void {
     const index = tileX + tileY * FIELD_PROPS.tileWidth;
     this.tiles[index] = tile;
-  }
-
-  private get stories(): StoriesComponent {
-    return this.get(StoriesComponent)!;
   }
 
 }
