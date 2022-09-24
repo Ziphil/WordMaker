@@ -56,78 +56,66 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
     }
   }
 
+  public *storyWithRatio(update: (ratio: number) => unknown, duration: number): StoryGenerator {
+    let timer = 0;
+    while (true) {
+      timer += yield;
+      const ratio = clamp(timer / duration, 0, 1);
+      update(ratio);
+      if (timer >= duration) {
+        break;
+      }
+    }
+  }
+
   public *storyMoveTo(destPos: Vector, duration: number): StoryGenerator {
     const transform = this.owner?.get(TransformComponent) ?? null;
     if (transform !== null) {
-      let timer = 0;
       const initialPos = transform.pos.clone();
-      while (true) {
-        timer += yield;
-        const ratio = clamp(timer / duration, 0, 1);
+      yield* this.storyWithRatio((ratio) => {
         const pos = lerp(initialPos, destPos, ratio);
         transform.pos = pos;
-        if (timer >= duration) {
-          break;
-        }
-      }
+      }, duration);
     } else {
-      throw new Error("entity has no TransformComponent");
+      throw new Error("entity does not have TransformComponent");
     }
   }
 
   public *storyFadeIn(duration: number): StoryGenerator {
     const graphics = this.owner?.get(GraphicsComponent) ?? null;
     if (graphics !== null) {
-      let timer = 0;
-      while (true) {
-        timer += yield;
-        const ratio = clamp(timer / duration, 0, 1);
+      yield* this.storyWithRatio((ratio) => {
         const opacity = lerp(0, 1, ratio);
         graphics.opacity = opacity;
-        if (timer >= duration) {
-          break;
-        }
-      }
+      }, duration);
     } else {
-      throw new Error("entity has no GraohicsComponent");
+      throw new Error("entity does not have GraphicsComponent");
     }
   }
 
   public *storyFadeOut(duration: number): StoryGenerator {
     const graphics = this.owner?.get(GraphicsComponent) ?? null;
     if (graphics !== null) {
-      let timer = 0;
-      while (true) {
-        timer += yield;
-        const ratio = clamp(timer / duration, 0, 1);
+      yield* this.storyWithRatio((ratio) => {
         const opacity = lerp(1, 0, ratio);
         graphics.opacity = opacity;
-        if (timer >= duration) {
-          break;
-        }
-      }
+      }, duration);
     } else {
-      throw new Error("entity has no GraohicsComponent");
+      throw new Error("entity does not have GraphicsComponent");
     }
   }
 
   public *storyBlink(duration: number): StoryGenerator {
     const graphics = this.owner?.get(GraphicsComponent) ?? null;
     if (graphics !== null) {
-      let timer = 0;
-      while (true) {
-        timer += yield;
-        const ratio = clamp(timer / duration, 0, 1);
+      yield* this.storyWithRatio((ratio) => {
         const tint = Color.fromHSL(0, 0, 1, lerp(0.5, 0, ratio));
         for (const {graphic} of graphics.current) {
           graphic.tint = tint;
         }
-        if (timer >= duration) {
-          break;
-        }
-      }
+      }, duration);
     } else {
-      throw new Error("entity has no GraohicsComponent");
+      throw new Error("entity does not have GraphicsComponent");
     }
   }
 
