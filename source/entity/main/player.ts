@@ -23,6 +23,7 @@ import {
   TILE_DIMENSTION,
   isEdge
 } from "/source/entity/main/field";
+import {parallel} from "/source/util/generator";
 import {
   Direction,
   calcDirectionDiff
@@ -44,7 +45,7 @@ export class Player extends FloatingActor {
 
   public constructor({tileX, tileY, ...configs}: PlayerConfigs) {
     super({
-      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height)
+      pos: vec(tileX * TILE_DIMENSTION.width, tileY * TILE_DIMENSTION.height - 4)
     });
     this.tileX = tileX;
     this.tileY = tileY;
@@ -54,6 +55,7 @@ export class Player extends FloatingActor {
   }
 
   public override onInitialize(engine: Engine): void {
+    this.appear();
   }
 
   public override onPreUpdate(engine: Engine, delta: number): void {
@@ -66,6 +68,11 @@ export class Player extends FloatingActor {
     const storiesComponent = new StoriesComponent();
     this.addComponent(inputComponrnt);
     this.addComponent(storiesComponent);
+  }
+
+  private appear(): void {
+    this.graphics.opacity = 0;
+    this.stories.addStory(() => this.storyAppear());
   }
 
   private move(): void {
@@ -85,6 +92,13 @@ export class Player extends FloatingActor {
 
   private updateDepth(): void {
     this.z = this.tileX + this.tileY * FIELD_PROPS.tileWidth;
+  }
+
+  private *storyAppear(): StoryGenerator {
+    yield* parallel(
+      this.stories.storyMoveTo(this.pos.add(vec(0, 4)), DURATIONS.appear),
+      this.stories.storyFadeIn(DURATIONS.appear)
+    );
   }
 
   private *storyMove(direction: Direction): StoryGenerator {
