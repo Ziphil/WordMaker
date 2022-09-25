@@ -2,15 +2,11 @@
 
 import {
   Engine,
-  GraphicsGroup,
   vec
 } from "excalibur";
 import {
   StoryGenerator
 } from "/source/component";
-import {
-  SPRITE_SHEETS
-} from "/source/core/asset";
 import {
   DURATIONS
 } from "/source/core/constant";
@@ -18,6 +14,9 @@ import DATA from "/source/data/data.json";
 import {
   FloatingActorWithStories
 } from "/source/entity/floating-actor";
+import {
+  FieldGraphic
+} from "/source/entity/main/field-graphic";
 import {
   Player
 } from "/source/entity/main/player";
@@ -30,7 +29,9 @@ import {
 import {
   Tile
 } from "/source/entity/main/tile";
-import {parallel} from "/source/util/generator";
+import {
+  parallel
+} from "/source/util/generator";
 import {
   Direction,
   calcDirectionDiff
@@ -70,10 +71,10 @@ export class Field extends FloatingActorWithStories {
       z: 0
     });
     this.tiles = Array.from({length: FIELD_PROPS.tileWidth * FIELD_PROPS.tileHeight});
+    this.graphics.use(new FieldGraphic());
   }
 
   public override onInitialize(engine: Engine): void {
-    this.initializeGraphics();
     this.start();
   }
 
@@ -81,24 +82,6 @@ export class Field extends FloatingActorWithStories {
     this.addPlayer();
     this.addReadyPane();
     this.stories.addStory(() => this.storyStart());
-  }
-
-  private initializeGraphics(): void {
-    const members = [];
-    const sprites = SPRITE_SHEETS.field.sprites;
-    const {width, height} = TILE_DIMENSTION;
-    const {tileWidth, tileHeight} = FIELD_PROPS;
-    for (let tileY = 1 ; tileY < tileHeight - 1 ; tileY ++) {
-      const y = 20 + ((tileY === 1) ? 0 : (height + 1) + height * (tileY - 2));
-      const baseSpriteIndex = (tileY === 1) ? 0 : (tileY === tileHeight - 2) ? 6 : 3;
-      for (let tileX = 1 ; tileX < tileWidth - 1 ; tileX ++) {
-        const x = 20 + ((tileX === 1) ? 0 : (width + 1) + width * (tileX - 2));
-        const spriteIndex = baseSpriteIndex + ((tileX === 1) ? 0 : (tileX === tileWidth - 2) ? 2 : 1);
-        members.push({graphic: sprites[spriteIndex], pos: vec(x, y)});
-      }
-    }
-    const graphic = new GraphicsGroup({members});
-    this.graphics.use(graphic);
   }
 
   public addTiles(count?: number): void {
