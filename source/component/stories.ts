@@ -25,17 +25,20 @@ export type StoryGenerator = Generator<unknown, void, number>;
 export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
 
   public readonly type: any = STORIES_COMPONENT_TYPE;
-  public generators: Array<StoryGenerator>;
+  public generatorSpecs: Array<{generator: StoryGenerator, resolve: () => void}>;
 
   public constructor() {
     super();
-    this.generators = [];
+    this.generatorSpecs = [];
   }
 
-  public addStory(story: () => StoryGenerator): void {
+  public addStory(story: () => StoryGenerator): Promise<void> {
     const generator = story();
     generator.next();
-    this.generators.push(generator);
+    const promise = new Promise<void>((resolve, reject) => {
+      this.generatorSpecs.push({generator, resolve});
+    });
+    return promise;
   }
 
   public runAfterDelay(callback: () => unknown, duration: number): void {
@@ -136,15 +139,16 @@ export class StoriesSystem extends System<StoriesComponent> {
   private runStories(entity: Entity, delta: number): void {
     const stories = entity.get(StoriesComponent)!;
     const deletedIndices = [] as Array<number>;
-    for (let i = 0 ; i < stories.generators.length ; i ++) {
-      const generator = stories.generators[i];
+    for (let i = 0 ; i < stories.generatorSpecs.length ; i ++) {
+      const {generator, resolve} = stories.generatorSpecs[i];
       const result = generator.next(delta);
       if (result.done) {
+        resolve();
         deletedIndices.push(i);
       }
     }
     if (deletedIndices.length > 0) {
-      stories.generators = stories.generators.filter((dummy, index) => !deletedIndices.includes(index));
+      stories.generatorSpecs = stories.generatorSpecs.filter((dummy, index) => !deletedIndices.includes(index));
     }
   }
 
