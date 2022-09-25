@@ -75,13 +75,13 @@ export class Field extends FloatingActorWithStories {
   }
 
   public override onInitialize(engine: Engine): void {
-    this.start();
+    this.ready();
   }
 
-  private start(): void {
+  private ready(): void {
     this.addPlayer();
     this.addReadyPane();
-    this.stories.addStory(() => this.storyStart());
+    this.stories.addStory(() => this.storyReady());
   }
 
   public addTiles(count?: number): void {
@@ -199,7 +199,7 @@ export class Field extends FloatingActorWithStories {
     return results;
   }
 
-  private *storyStart(): StoryGenerator {
+  private *storyReady(): StoryGenerator {
     yield* parallel(
       this.readyPane.storyAppear(),
       this.storyAddTiles(40)
