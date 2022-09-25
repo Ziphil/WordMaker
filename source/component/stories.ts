@@ -41,12 +41,12 @@ export class StoriesComponent extends Component<typeof STORIES_COMPONENT_TYPE> {
     return promise;
   }
 
-  public runAfterDelay(callback: () => unknown, duration: number): void {
+  public runAfterDelay(callback: () => unknown, duration: number): Promise<void> {
     const story = function *(this: StoriesComponent): StoryGenerator {
       yield* this.storyWait(duration);
       callback();
     };
-    this.addStory(story.bind(this));
+    return this.addStory(story.bind(this));
   }
 
   public *storyWait(duration: number): StoryGenerator {
